@@ -2,3 +2,7 @@
 2022-08-12 12:24:13,707 app.py INFO:No data found, uploading data from excel sheet
 2022-08-12 12:24:14,449 app.py INFO:UI rendered
 2022-08-12 12:24:23,062 app.py INFO:The program is closed normally, saving the current data
+2022-09-29 16:13:16,519 app.py INFO:New instanciation!
+2022-09-29 16:13:17,213 app.py INFO:No data found, uploading data from excel sheet
+2022-09-29 16:13:17,997 app.py INFO:UI rendered
+2022-09-29 16:13:21,107 app.py INFO:The program is closed normally, saving the current data

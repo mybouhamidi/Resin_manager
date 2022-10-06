@@ -36,7 +36,14 @@ import os
 import pandas as pd
 import numpy as np
 
-from structs import Prints, Printer, Consummables, Printer_addition
+from structs import (
+    Prints,
+    Printer,
+    Consummables,
+    Printer_addition,
+    Consummables_addition,
+    Tank_addition,
+)
 
 # # TO DO:
 # Label printers with serial number
@@ -76,7 +83,7 @@ class Tracker(QWidget):
 
         self.tabs.addTab(self.tab_ui, "New print")
         self.tabs.addTab(self.tab_prints, "Track prints")
-        self.tabs.addTab(self.tab_printers, "Add to config")
+        # self.tabs.addTab(self.tab_printers, "Add to config")
         self.tabs.addTab(self.tab_resins, "Track config")
         self.tabs.addTab(self.tab_tanks, "Labelling tracker")
         self.tabs.addTab(self.tab_maintenance, "Maintenance tracker")
@@ -107,11 +114,18 @@ class Tracker(QWidget):
         widget_prints = QWidget()
         self.ui_hbox = QHBoxLayout(widget_prints)
         self.ui_vbox = QVBoxLayout()
-        self.ui_vbox.addWidget(QLabel("Test"))
+        self.preliminary_vbox = QGridLayout()
+        self.preliminary_vbox.setColumnMinimumWidth(200, 200)
+
+        self.preliminary_vbox.addWidget(QLabel("The current choices are:"), 0, 0)
+        self.preliminary_vbox.addWidget(QLabel("The printer selected is:"), 1, 0)
+        self.preliminary_vbox.addWidget(QLabel("The resin selected is:"), 2, 0)
+        self.preliminary_vbox.addWidget(QLabel("The tank selected is:"), 3, 0)
+        self.ui_vbox.addLayout(self.preliminary_vbox)
         self.ui_vertical = QFormLayout()
         self.render_printer_section()
         self.ui_vertical.addRow(cartridge_tab)
-        self.ui_vertical.addRow(tank_tab)
+        self.render_tanks_section()
         self.ui_hbox.addLayout(self.ui_vbox)
         self.ui_hbox.addLayout(self.ui_vertical)
         self.tab_ui.setWidget(widget_prints)
@@ -320,86 +334,86 @@ class Tracker(QWidget):
         # Resins tab
         vertical_resins_spliter = QVBoxLayout()
         horizontal_resins = QHBoxLayout()
-        grid_resins = QGridLayout()
+        # grid_resins = QGridLayout()
 
-        self.cartridge_id_resins_label = QLabel("Cartridge ID:")
-        self.cartridge_id_resins_field = QLineEdit()
-        self.cartridge_id_resins_field.setValidator(validator_2)
-        self.cartridge_id_resins_combo_box = QComboBox()
-        self.cartridge_id_resins_combo_box.addItems(
-            list(map(lambda x: str(x), set(self.data["resins"]["CartridgeID.1"])))
-        )
-        self.cartridge_id_resins_combo_box.setCurrentIndex(-1)
-        self.cartridge_id_resins_label.setBuddy(self.cartridge_id_resins_combo_box)
-        self.cartridge_id_resins_combo_box.setLineEdit(self.cartridge_id_resins_field)
-        self.cartridge_id_resins_combo_box.currentTextChanged.connect(
-            lambda x: self.cartridge_id_resins_combo_box.setStyleSheet(
-                "border: 0.5px solid black"
-            )
-        )
+        # self.cartridge_id_resins_label = QLabel("Cartridge ID:")
+        # self.cartridge_id_resins_field = QLineEdit()
+        # self.cartridge_id_resins_field.setValidator(validator_2)
+        # self.cartridge_id_resins_combo_box = QComboBox()
+        # self.cartridge_id_resins_combo_box.addItems(
+        #     list(map(lambda x: str(x), set(self.data["resins"]["CartridgeID.1"])))
+        # )
+        # self.cartridge_id_resins_combo_box.setCurrentIndex(-1)
+        # self.cartridge_id_resins_label.setBuddy(self.cartridge_id_resins_combo_box)
+        # self.cartridge_id_resins_combo_box.setLineEdit(self.cartridge_id_resins_field)
+        # self.cartridge_id_resins_combo_box.currentTextChanged.connect(
+        #     lambda x: self.cartridge_id_resins_combo_box.setStyleSheet(
+        #         "border: 0.5px solid black"
+        #     )
+        # )
 
-        self.resin_type_resins_label = QLabel("Resin type:")
-        self.resin_type_resins_field = QLineEdit()
-        self.resin_type_resins_combo_box = QComboBox()
-        self.resin_type_resins_combo_box.addItems(
-            list(map(lambda x: str(x), set(self.data["resins"]["Resin Cartridge.1"])))
-        )
-        self.resin_type_resins_combo_box.setCurrentIndex(-1)
-        self.resin_type_resins_label.setBuddy(self.resin_type_resins_combo_box)
-        self.resin_type_resins_combo_box.setLineEdit(self.resin_type_resins_field)
-        self.resin_type_resins_combo_box.currentTextChanged.connect(
-            lambda x: self.resin_type_resins_combo_box.setStyleSheet(
-                "border: 0.5px solid black"
-            )
-        )
+        # self.resin_type_resins_label = QLabel("Resin type:")
+        # self.resin_type_resins_field = QLineEdit()
+        # self.resin_type_resins_combo_box = QComboBox()
+        # self.resin_type_resins_combo_box.addItems(
+        #     list(map(lambda x: str(x), set(self.data["resins"]["Resin Cartridge.1"])))
+        # )
+        # self.resin_type_resins_combo_box.setCurrentIndex(-1)
+        # self.resin_type_resins_label.setBuddy(self.resin_type_resins_combo_box)
+        # self.resin_type_resins_combo_box.setLineEdit(self.resin_type_resins_field)
+        # self.resin_type_resins_combo_box.currentTextChanged.connect(
+        #     lambda x: self.resin_type_resins_combo_box.setStyleSheet(
+        #         "border: 0.5px solid black"
+        #     )
+        # )
 
-        self.version_resins_label = QLabel("Version:")
-        self.version_resins_combo_box = QComboBox()
-        self.version_resins_combo_box.addItems(
-            list(map(lambda x: str(x), set(self.data["resins"]["Version.1"])))
-        )
-        self.version_resins_combo_box.setCurrentIndex(-1)
-        self.version_resins_field = QLineEdit()
-        self.version_resins_field.setValidator(validator_1)
-        self.version_resins_combo_box.setLineEdit(self.version_resins_field)
-        self.version_resins_label.setBuddy(self.version_resins_combo_box)
-        self.version_resins_combo_box.currentTextChanged.connect(
-            lambda x: self.version_resins_combo_box.setStyleSheet(
-                "border: 0.5px solid black"
-            )
-        )
+        # self.version_resins_label = QLabel("Version:")
+        # self.version_resins_combo_box = QComboBox()
+        # self.version_resins_combo_box.addItems(
+        #     list(map(lambda x: str(x), set(self.data["resins"]["Version.1"])))
+        # )
+        # self.version_resins_combo_box.setCurrentIndex(-1)
+        # self.version_resins_field = QLineEdit()
+        # self.version_resins_field.setValidator(validator_1)
+        # self.version_resins_combo_box.setLineEdit(self.version_resins_field)
+        # self.version_resins_label.setBuddy(self.version_resins_combo_box)
+        # self.version_resins_combo_box.currentTextChanged.connect(
+        #     lambda x: self.version_resins_combo_box.setStyleSheet(
+        #         "border: 0.5px solid black"
+        #     )
+        # )
 
-        self.batch_date_resins_label = QLabel("Batch date (YYYY/MM/DD):")
-        self.batch_date_resins_field = QLineEdit()
-        self.batch_date_resins_field.setText(datetime.now().strftime("%Y/%m/%d"))
-        self.batch_date_resins_field.setValidator(validator)
-        self.batch_date_resins_field.textChanged.connect(
-            lambda x: self.batch_date_resins_field.setStyleSheet(
-                "border: 0.5px solid black"
-            )
-        )
+        # self.batch_date_resins_label = QLabel("Batch date (YYYY/MM/DD):")
+        # self.batch_date_resins_field = QLineEdit()
+        # self.batch_date_resins_field.setText(datetime.now().strftime("%Y/%m/%d"))
+        # self.batch_date_resins_field.setValidator(validator)
+        # self.batch_date_resins_field.textChanged.connect(
+        #     lambda x: self.batch_date_resins_field.setStyleSheet(
+        #         "border: 0.5px solid black"
+        #     )
+        # )
 
-        self.resins_company_label = QLabel("Company:")
-        self.resins_company_field = QLineEdit()
-        self.resins_company_combo_box = QComboBox()
-        self.resins_company_combo_box.addItems(["FormLabs", "CadWorks"])
-        self.resins_company_combo_box.setCurrentIndex(-1)
-        self.resins_company_label.setBuddy(self.resins_company_combo_box)
-        self.resins_company_combo_box.setLineEdit(self.resins_company_field)
+        # self.resins_company_label = QLabel("Company:")
+        # self.resins_company_field = QLineEdit()
+        # self.resins_company_combo_box = QComboBox()
+        # self.resins_company_combo_box.addItems(["FormLabs", "CadWorks"])
+        # self.resins_company_combo_box.setCurrentIndex(-1)
+        # self.resins_company_label.setBuddy(self.resins_company_combo_box)
+        # self.resins_company_combo_box.setLineEdit(self.resins_company_field)
 
-        self.comments_resins_label = QLabel("Comments:")
-        self.comments_resins_field = QLineEdit()
+        # self.comments_resins_label = QLabel("Comments:")
+        # self.comments_resins_field = QLineEdit()
 
-        grid_resins.addWidget(self.cartridge_id_resins_label, 0, 0)
-        grid_resins.addWidget(self.cartridge_id_resins_combo_box, 1, 0)
-        grid_resins.addWidget(self.resin_type_resins_label, 0, 1)
-        grid_resins.addWidget(self.resin_type_resins_combo_box, 1, 1)
-        grid_resins.addWidget(self.version_resins_label, 2, 0)
-        grid_resins.addWidget(self.version_resins_combo_box, 3, 0)
-        grid_resins.addWidget(self.batch_date_resins_label, 2, 1)
-        grid_resins.addWidget(self.batch_date_resins_field, 3, 1)
-        grid_resins.addWidget(self.comments_resins_label, 4, 0)
-        grid_resins.addWidget(self.comments_resins_field, 5, 0)
+        # grid_resins.addWidget(self.cartridge_id_resins_label, 0, 0)
+        # grid_resins.addWidget(self.cartridge_id_resins_combo_box, 1, 0)
+        # grid_resins.addWidget(self.resin_type_resins_label, 0, 1)
+        # grid_resins.addWidget(self.resin_type_resins_combo_box, 1, 1)
+        # grid_resins.addWidget(self.version_resins_label, 2, 0)
+        # grid_resins.addWidget(self.version_resins_combo_box, 3, 0)
+        # grid_resins.addWidget(self.batch_date_resins_label, 2, 1)
+        # grid_resins.addWidget(self.batch_date_resins_field, 3, 1)
+        # grid_resins.addWidget(self.comments_resins_label, 4, 0)
+        # grid_resins.addWidget(self.comments_resins_field, 5, 0)
         export_cartridge = QPushButton()
         export_cartridge.setIcon(QIcon("assets/download-solid.svg"))
         export_cartridge.setToolTip("Export cartridges table to excel sheet")
@@ -408,9 +422,9 @@ class Tracker(QWidget):
         cartridge_add.setIcon(QIcon("assets/plus-solid.svg"))
         cartridge_add.setToolTip("Append cartridge to table")
         cartridge_add.pressed.connect(self.validate_cartrigdes)
-        grid_resins.addWidget(cartridge_add, 6, 0)
-        grid_resins.addWidget(self.resins_company_label, 4, 1)
-        grid_resins.addWidget(self.resins_company_combo_box, 5, 1)
+        # grid_resins.addWidget(cartridge_add, 6, 0)
+        # grid_resins.addWidget(self.resins_company_label, 4, 1)
+        # grid_resins.addWidget(self.resins_company_combo_box, 5, 1)
         cartridge_del = QPushButton()
         cartridge_del.setIcon(QIcon("assets/circle-minus-solid.svg"))
         cartridge_del.setToolTip("Delete cartridge from table")
@@ -465,19 +479,19 @@ class Tracker(QWidget):
         vertical.addLayout(horizontal_resins)
 
         # Printer tab
-        tab_printers = QTabWidget()
-        tab_printers_content = QWidget()
-        tab_printers.addTab(tab_printers_content, "Printers:")
+        # tab_printers = QTabWidget()
+        # tab_printers_content = QWidget()
+        # tab_printers.addTab(tab_printers_content, "Printers:")
 
-        tab_cartridges = QTabWidget()
-        tab_cartridges_content = QWidget()
-        tab_cartridges.addTab(tab_cartridges_content, "Cartridges:")
+        # tab_cartridges = QTabWidget()
+        # tab_cartridges_content = QWidget()
+        # tab_cartridges.addTab(tab_cartridges_content, "Cartridges:")
 
-        tab_tanks = QTabWidget()
-        tab_tanks_content = QWidget()
-        tab_tanks.addTab(tab_tanks_content, "Tanks:")
+        # tab_tanks = QTabWidget()
+        # tab_tanks_content = QWidget()
+        # tab_tanks.addTab(tab_tanks_content, "Tanks:")
 
-        horizontal_printers = QHBoxLayout()
+        # horizontal_printers = QHBoxLayout()
         # grid_printers = QGridLayout()
 
         # self.printer_name = QLabel("Printer's name:")
@@ -502,101 +516,101 @@ class Tracker(QWidget):
         # printers_add.clicked.connect(self.addPrinter)
 
         # horizontal_printers.addLayout(grid_printers)
-        tab_printers.setLayout(horizontal_printers)
-        tab_printers.setFixedHeight(150)
+        # tab_printers.setLayout(horizontal_printers)
+        # tab_printers.setFixedHeight(150)
 
         vertical_tanks = QVBoxLayout()
         horizontal_tanks = QHBoxLayout()
-        grid_tanks = QGridLayout()
+        # grid_tanks = QGridLayout()
 
-        self.tanks_id_label = QLabel("Tank ID:")
-        self.tanks_id_combo_box = QComboBox()
-        self.tanks_id_combo_box.addItems(
-            list(map(lambda x: str(x), set(self.data["tanks"]["TankID.1"])))
-        )
-        self.tanks_id_combo_box.setCurrentIndex(-1)
-        self.tanks_id_field = QLineEdit()
-        self.tanks_id_field.setValidator(validator_2)
-        self.tanks_id_label.setBuddy(self.tanks_id_combo_box)
-        self.tanks_id_combo_box.setLineEdit(self.tanks_id_field)
+        # self.tanks_id_label = QLabel("Tank ID:")
+        # self.tanks_id_combo_box = QComboBox()
+        # self.tanks_id_combo_box.addItems(
+        #     list(map(lambda x: str(x), set(self.data["tanks"]["TankID.1"])))
+        # )
+        # self.tanks_id_combo_box.setCurrentIndex(-1)
+        # self.tanks_id_field = QLineEdit()
+        # self.tanks_id_field.setValidator(validator_2)
+        # self.tanks_id_label.setBuddy(self.tanks_id_combo_box)
+        # self.tanks_id_combo_box.setLineEdit(self.tanks_id_field)
 
-        self.tanks_resin_label = QLabel("Resin Tank:")
-        self.tanks_resin_field = QLineEdit()
-        self.tanks_resin_combo_box = QComboBox()
-        self.tanks_resin_combo_box.addItems(
-            list(map(lambda x: str(x), set(self.data["tanks"]["Resin Tank.1"])))
-        )
-        self.tanks_resin_combo_box.setCurrentIndex(-1)
-        self.tanks_resin_label.setBuddy(self.tanks_resin_combo_box)
-        self.tanks_resin_combo_box.setLineEdit(self.tanks_resin_field)
+        # self.tanks_resin_label = QLabel("Resin Tank:")
+        # self.tanks_resin_field = QLineEdit()
+        # self.tanks_resin_combo_box = QComboBox()
+        # self.tanks_resin_combo_box.addItems(
+        #     list(map(lambda x: str(x), set(self.data["tanks"]["Resin Tank.1"])))
+        # )
+        # self.tanks_resin_combo_box.setCurrentIndex(-1)
+        # self.tanks_resin_label.setBuddy(self.tanks_resin_combo_box)
+        # self.tanks_resin_combo_box.setLineEdit(self.tanks_resin_field)
 
-        self.tanks_resin_fill_label = QLabel("Resin fill:")
-        self.tanks_resin_fill_field = QLineEdit()
-        self.tanks_resin_fill_combo_box = QComboBox()
-        self.tanks_resin_fill_combo_box.addItems(
-            list(map(lambda x: str(x), set(self.data["tanks"]["Resin Fill"])))
-        )
-        self.tanks_resin_fill_combo_box.setCurrentIndex(-1)
-        self.tanks_resin_fill_label.setBuddy(self.tanks_resin_fill_combo_box)
-        self.tanks_resin_fill_combo_box.setLineEdit(self.tanks_resin_fill_field)
+        # self.tanks_resin_fill_label = QLabel("Resin fill:")
+        # self.tanks_resin_fill_field = QLineEdit()
+        # self.tanks_resin_fill_combo_box = QComboBox()
+        # self.tanks_resin_fill_combo_box.addItems(
+        #     list(map(lambda x: str(x), set(self.data["tanks"]["Resin Fill"])))
+        # )
+        # self.tanks_resin_fill_combo_box.setCurrentIndex(-1)
+        # self.tanks_resin_fill_label.setBuddy(self.tanks_resin_fill_combo_box)
+        # self.tanks_resin_fill_combo_box.setLineEdit(self.tanks_resin_fill_field)
 
-        self.version_tanks_label = QLabel("Version:")
-        self.version_tanks_combo_box = QComboBox()
-        self.version_tanks_combo_box.addItems(
-            list(map(lambda x: str(x), set(self.data["tanks"]["Version.2"])))
-        )
-        self.version_tanks_combo_box.setCurrentIndex(-1)
-        self.version_tanks_field = QLineEdit()
-        self.version_tanks_field.setValidator(validator_1)
-        self.version_tanks_combo_box.setLineEdit(self.version_tanks_field)
-        self.version_tanks_label.setBuddy(self.version_tanks_combo_box)
+        # self.version_tanks_label = QLabel("Version:")
+        # self.version_tanks_combo_box = QComboBox()
+        # self.version_tanks_combo_box.addItems(
+        #     list(map(lambda x: str(x), set(self.data["tanks"]["Version.2"])))
+        # )
+        # self.version_tanks_combo_box.setCurrentIndex(-1)
+        # self.version_tanks_field = QLineEdit()
+        # self.version_tanks_field.setValidator(validator_1)
+        # self.version_tanks_combo_box.setLineEdit(self.version_tanks_field)
+        # self.version_tanks_label.setBuddy(self.version_tanks_combo_box)
 
-        self.tanks_total_volume_label = QLabel("Total print volume (mL):")
-        self.tanks_total_volume_field = QLineEdit()
-        self.tanks_total_volume_field.setValidator(validator_3)
+        # self.tanks_total_volume_label = QLabel("Total print volume (mL):")
+        # self.tanks_total_volume_field = QLineEdit()
+        # self.tanks_total_volume_field.setValidator(validator_3)
 
-        self.tanks_status_label = QLabel("Status:")
-        self.tanks_status_field = QLineEdit()
-        self.tanks_status_combo_box = QComboBox()
-        self.tanks_status_combo_box.addItems(set(self.data["tanks"]["Status.1"]))
-        self.tanks_status_combo_box.setCurrentIndex(-1)
-        self.tanks_status_label.setBuddy(self.tanks_status_combo_box)
-        self.tanks_status_combo_box.setLineEdit(self.tanks_status_field)
+        # self.tanks_status_label = QLabel("Status:")
+        # self.tanks_status_field = QLineEdit()
+        # self.tanks_status_combo_box = QComboBox()
+        # self.tanks_status_combo_box.addItems(set(self.data["tanks"]["Status.1"]))
+        # self.tanks_status_combo_box.setCurrentIndex(-1)
+        # self.tanks_status_label.setBuddy(self.tanks_status_combo_box)
+        # self.tanks_status_combo_box.setLineEdit(self.tanks_status_field)
 
-        self.tanks_company_label = QLabel("Company:")
-        self.tanks_company_field = QLineEdit()
-        self.tanks_company_combo_box = QComboBox()
-        self.tanks_company_combo_box.addItems(["FormLabs", "CadWorks"])
-        self.tanks_company_combo_box.setCurrentIndex(-1)
-        self.tanks_company_label.setBuddy(self.tanks_company_combo_box)
-        self.tanks_company_combo_box.setLineEdit(self.tanks_company_field)
+        # self.tanks_company_label = QLabel("Company:")
+        # self.tanks_company_field = QLineEdit()
+        # self.tanks_company_combo_box = QComboBox()
+        # self.tanks_company_combo_box.addItems(["FormLabs", "CadWorks"])
+        # self.tanks_company_combo_box.setCurrentIndex(-1)
+        # self.tanks_company_label.setBuddy(self.tanks_company_combo_box)
+        # self.tanks_company_combo_box.setLineEdit(self.tanks_company_field)
 
-        self.tanks_opened_date_label = QLabel("Opened date:")
-        self.tanks_opened_date_field = QLineEdit()
-        self.tanks_opened_date_field.setText(datetime.now().strftime("%Y/%m/%d"))
-        self.tanks_opened_date_field.setValidator(validator)
+        # self.tanks_opened_date_label = QLabel("Opened date:")
+        # self.tanks_opened_date_field = QLineEdit()
+        # self.tanks_opened_date_field.setText(datetime.now().strftime("%Y/%m/%d"))
+        # self.tanks_opened_date_field.setValidator(validator)
 
-        self.tanks_comments_label = QLabel("Comments:")
-        self.tanks_comments_field = QLineEdit()
+        # self.tanks_comments_label = QLabel("Comments:")
+        # self.tanks_comments_field = QLineEdit()
 
-        grid_tanks.addWidget(self.tanks_id_label, 0, 0)
-        grid_tanks.addWidget(self.tanks_id_combo_box, 1, 0)
-        grid_tanks.addWidget(self.tanks_resin_label, 0, 1)
-        grid_tanks.addWidget(self.tanks_resin_combo_box, 1, 1)
-        grid_tanks.addWidget(self.tanks_resin_fill_label, 2, 0)
-        grid_tanks.addWidget(self.tanks_resin_fill_combo_box, 3, 0)
-        grid_tanks.addWidget(self.version_tanks_label, 2, 1)
-        grid_tanks.addWidget(self.version_tanks_combo_box, 3, 1)
-        grid_tanks.addWidget(self.tanks_total_volume_label, 4, 0)
-        grid_tanks.addWidget(self.tanks_total_volume_field, 5, 0)
-        grid_tanks.addWidget(self.tanks_status_label, 4, 1)
-        grid_tanks.addWidget(self.tanks_status_combo_box, 5, 1)
-        grid_tanks.addWidget(self.tanks_opened_date_label, 6, 0)
-        grid_tanks.addWidget(self.tanks_opened_date_field, 7, 0)
-        grid_tanks.addWidget(self.tanks_company_label, 6, 1)
-        grid_tanks.addWidget(self.tanks_company_combo_box, 7, 1)
-        grid_tanks.addWidget(self.tanks_comments_label, 8, 0)
-        grid_tanks.addWidget(self.tanks_comments_field, 9, 0)
+        # grid_tanks.addWidget(self.tanks_id_label, 0, 0)
+        # grid_tanks.addWidget(self.tanks_id_combo_box, 1, 0)
+        # grid_tanks.addWidget(self.tanks_resin_label, 0, 1)
+        # grid_tanks.addWidget(self.tanks_resin_combo_box, 1, 1)
+        # grid_tanks.addWidget(self.tanks_resin_fill_label, 2, 0)
+        # grid_tanks.addWidget(self.tanks_resin_fill_combo_box, 3, 0)
+        # grid_tanks.addWidget(self.version_tanks_label, 2, 1)
+        # grid_tanks.addWidget(self.version_tanks_combo_box, 3, 1)
+        # grid_tanks.addWidget(self.tanks_total_volume_label, 4, 0)
+        # grid_tanks.addWidget(self.tanks_total_volume_field, 5, 0)
+        # grid_tanks.addWidget(self.tanks_status_label, 4, 1)
+        # grid_tanks.addWidget(self.tanks_status_combo_box, 5, 1)
+        # grid_tanks.addWidget(self.tanks_opened_date_label, 6, 0)
+        # grid_tanks.addWidget(self.tanks_opened_date_field, 7, 0)
+        # grid_tanks.addWidget(self.tanks_company_label, 6, 1)
+        # grid_tanks.addWidget(self.tanks_company_combo_box, 7, 1)
+        # grid_tanks.addWidget(self.tanks_comments_label, 8, 0)
+        # grid_tanks.addWidget(self.tanks_comments_field, 9, 0)
         export_tanks = QPushButton()
         export_tanks.setIcon(QIcon("assets/download-solid.svg"))
         export_tanks.setToolTip("Export tanks table to excel sheet")
@@ -605,7 +619,7 @@ class Tracker(QWidget):
         tanks_add.setIcon(QIcon("assets/plus-solid.svg"))
         tanks_add.setToolTip("Append tank to table")
         tanks_add.clicked.connect(self.validate_tanks)
-        grid_tanks.addWidget(tanks_add, 9, 1)
+        # grid_tanks.addWidget(tanks_add, 9, 1)
         tanks_del = QPushButton()
         tanks_del.setIcon(QIcon("assets/circle-minus-solid.svg"))
         tanks_del.setToolTip("Delete tank from table")
@@ -639,16 +653,16 @@ class Tracker(QWidget):
         vertical_resins_spliter.addWidget(self.tanks)
         vertical_resins_spliter.addWidget(export_tanks)
         horizontal_tanks.addWidget(self.cartridge_table)
-        tab_tanks.setLayout(grid_tanks)
-        tab_tanks.setFixedHeight(440)
-        tab_cartridges.setLayout(grid_resins)
-        tab_cartridges.setFixedHeight(300)
+        # tab_tanks.setLayout(grid_tanks)
+        # tab_tanks.setFixedHeight(440)
+        # # tab_cartridges.setLayout(grid_resins)
+        # tab_cartridges.setFixedHeight(300)
 
         components_widget = QWidget()
         vertical_1 = QFormLayout(components_widget)
-        vertical_1.addRow(tab_tanks)
-        vertical_1.addRow(tab_cartridges)
-        vertical_1.addRow(tab_printers)
+        # vertical_1.addRow(tab_tanks)
+        # vertical_1.addRow(tab_cartridges)
+        # vertical_1.addRow(tab_printers)
         self.tab_printers.setWidget(components_widget)
         self.tab_printers.setWidgetResizable(True)
 
@@ -995,6 +1009,11 @@ class Tracker(QWidget):
         ).toolTip()
         for button in self.cartridge_button_group.buttons():
             if button.isChecked():
+                if self.preliminary_vbox.itemAtPosition(2, 1) is not None:
+                    self.preliminary_vbox.removeWidget(
+                        self.preliminary_vbox.itemAtPosition(2, 1).widget()
+                    )
+                self.preliminary_vbox.addWidget(QLabel(f"{button.toolTip()}"), 2, 1)
                 button.setStyleSheet(
                     """QCheckBox::indicator {
                                 image: url(assets/Resins/"""
@@ -1082,746 +1101,14 @@ class Tracker(QWidget):
             self.cartridge_grid.addWidget(_, 0, counter)
             counter += 1
 
-        # _ = QPushButton()
-        # _.setIcon(QIcon("assets/plus-solid.svg"))
-        # _.setFixedSize(QSize(40, 40))
-        # _.setToolTip("Add new printer")
-        # _.pressed.connect(self.save_printer)
-        # print(self.printer_button_group.idClicked)
-        # if self.form2_button.isChecked():
-        #     label = QLabel("Clear")
-        #     self.clear_form = QCheckBox()
-        #     self.clear_form.setStyleSheet(
-        #         """
-        #             QCheckBox::indicator {
-        #                 image: url(assets/Clear.PNG);
-        #             }
-        #         """
-        #     )
-        #     self.clear_form.toggled.connect(
-        #         lambda x: [
-        #             self.clear_form.setStyleSheet(
-        #                 """QCheckBox::indicator {
-        #                 image: url(assets/Clear.PNG);
-        #                 border: 0.5px solid red;}
-        #         """
-        #             ),
-        #             self.version_combo_box.clear(),
-        #             self.version_combo_box.addItems(
-        #                 list(
-        #                     map(
-        #                         lambda x: str(x),
-        #                         set(
-        #                             self.data["prints"]["Version"].loc[
-        #                                 self.data["prints"]["Resin Cartridge"]
-        #                                 == "Clear"
-        #                             ]
-        #                         ),
-        #                     )
-        #                 )
-        #             ),
-        #             self.cartridge_id_combo_box.clear(),
-        #             self.cartridge_id_combo_box.addItems(
-        #                 list(
-        #                     map(
-        #                         lambda x: str(x),
-        #                         set(
-        #                             self.data["prints"]["CartridgeID"].loc[
-        #                                 self.data["prints"]["Resin Cartridge"]
-        #                                 == "Clear"
-        #                             ]
-        #                         ),
-        #                     )
-        #                 )
-        #             ),
-        #         ]
-        #         if self.clear_form.isChecked()
-        #         else self.clear_form.setStyleSheet(
-        #             """QCheckBox::indicator {
-        #                 image: url(assets/Clear.PNG);
-        #                 border: 0.5px solid black;}"""
-        #         )
-        #     )
-        #     self.clear_form.setToolTip("Clear")
-        #     self.cartridge_button_group.addButton(self.clear_form)
+        add_resin_button = QPushButton()
+        add_resin_button.setIcon(QIcon("assets/plus-solid.svg"))
+        add_resin_button.setFixedSize(QSize(40, 40))
+        add_resin_button.setToolTip("Add new printer")
+        add_resin_button.clicked.connect(self.save_resin)
 
-        #     label_1 = QLabel("Durable")
-        #     self.durable_form = QCheckBox()
-        #     self.durable_form.setStyleSheet(
-        #         """
-        #             QCheckBox::indicator {
-        #                 image: url(assets/Durable.PNG);
-        #             }
-        #         """
-        #     )
-        #     self.durable_form.toggled.connect(
-        #         lambda x: [
-        #             self.durable_form.setStyleSheet(
-        #                 """QCheckBox::indicator {
-        #                 image: url(assets/Durable.PNG);
-        #                 border: 0.5px solid red;}
-        #         """
-        #             ),
-        #             self.version_combo_box.clear(),
-        #             self.version_combo_box.addItems(
-        #                 list(
-        #                     map(
-        #                         lambda x: str(x),
-        #                         set(
-        #                             self.data["prints"]["Version"].loc[
-        #                                 self.data["prints"]["Resin Cartridge"]
-        #                                 == "Durable"
-        #                             ]
-        #                         ),
-        #                     )
-        #                 )
-        #             ),
-        #             self.cartridge_id_combo_box.clear(),
-        #             self.cartridge_id_combo_box.addItems(
-        #                 list(
-        #                     map(
-        #                         lambda x: str(x),
-        #                         set(
-        #                             self.data["prints"]["CartridgeID"].loc[
-        #                                 self.data["prints"]["Resin Cartridge"]
-        #                                 == "Durable"
-        #                             ]
-        #                         ),
-        #                     )
-        #                 )
-        #             ),
-        #         ]
-        #         if self.durable_form.isChecked()
-        #         else self.durable_form.setStyleSheet(
-        #             """QCheckBox::indicator {
-        #                 image: url(assets/Durable.PNG);
-        #                 border: 0.5px solid black;}"""
-        #         ),
-        #     )
-        #     self.durable_form.setToolTip("Durable")
-        #     self.cartridge_button_group.addButton(self.durable_form)
-
-        #     label_2 = QLabel("Elastic")
-        #     self.elastic_form = QCheckBox()
-        #     self.elastic_form.setStyleSheet(
-        #         """
-        #             QCheckBox::indicator {
-        #                 image: url(assets/Elastic.PNG);
-        #             }
-        #         """
-        #     )
-        #     self.elastic_form.toggled.connect(
-        #         lambda x: [
-        #             self.elastic_form.setStyleSheet(
-        #                 """QCheckBox::indicator {
-        #                 image: url(assets/Elastic.PNG);
-        #                 border: 0.5px solid red;}
-        #         """
-        #             ),
-        #             self.version_combo_box.clear(),
-        #             self.version_combo_box.addItems(
-        #                 list(
-        #                     map(
-        #                         lambda x: str(x),
-        #                         set(
-        #                             self.data["prints"]["Version"].loc[
-        #                                 self.data["prints"]["Resin Cartridge"]
-        #                                 == "Elastic"
-        #                             ]
-        #                         ),
-        #                     )
-        #                 )
-        #             ),
-        #             self.cartridge_id_combo_box.clear(),
-        #             self.cartridge_id_combo_box.addItems(
-        #                 list(
-        #                     map(
-        #                         lambda x: str(x),
-        #                         set(
-        #                             self.data["prints"]["CartridgeID"].loc[
-        #                                 self.data["prints"]["Resin Cartridge"]
-        #                                 == "Elastic"
-        #                             ]
-        #                         ),
-        #                     )
-        #                 )
-        #             ),
-        #         ]
-        #         if self.elastic_form.isChecked()
-        #         else self.elastic_form.setStyleSheet(
-        #             """QCheckBox::indicator {
-        #                 image: url(assets/Elastic.PNG);
-        #                 border: 0.5px solid black;}"""
-        #         )
-        #     )
-        #     self.elastic_form.setToolTip("Elastic")
-        #     self.cartridge_button_group.addButton(self.elastic_form)
-
-        #     label_3 = QLabel("Flexible")
-        #     self.flexible_form = QCheckBox()
-        #     self.flexible_form.setStyleSheet(
-        #         """
-        #             QCheckBox::indicator {
-        #                 image: url(assets/Flexible.PNG);
-        #             }
-        #         """
-        #     )
-        #     self.flexible_form.toggled.connect(
-        #         lambda x: [
-        #             self.flexible_form.setStyleSheet(
-        #                 """QCheckBox::indicator {
-        #                 image: url(assets/Flexible.PNG);
-        #                 border: 0.5px solid red;}
-        #         """
-        #             ),
-        #             self.version_combo_box.clear(),
-        #             self.version_combo_box.addItems(
-        #                 list(
-        #                     map(
-        #                         lambda x: str(x),
-        #                         set(
-        #                             self.data["prints"]["Version"].loc[
-        #                                 self.data["prints"]["Resin Cartridge"]
-        #                                 == "Flexible"
-        #                             ]
-        #                         ),
-        #                     )
-        #                 )
-        #             ),
-        #             self.cartridge_id_combo_box.clear(),
-        #             self.cartridge_id_combo_box.addItems(
-        #                 list(
-        #                     map(
-        #                         lambda x: str(x),
-        #                         set(
-        #                             self.data["prints"]["CartridgeID"].loc[
-        #                                 self.data["prints"]["Resin Cartridge"]
-        #                                 == "Flexible"
-        #                             ]
-        #                         ),
-        #                     )
-        #                 )
-        #             ),
-        #         ]
-        #         if self.flexible_form.isChecked()
-        #         else self.flexible_form.setStyleSheet(
-        #             """QCheckBox::indicator {
-        #                 image: url(assets/Flexible.PNG);
-        #                 border: 0.5px solid black;}"""
-        #         )
-        #     )
-        #     self.flexible_form.setToolTip("Flexible")
-        #     self.cartridge_button_group.addButton(self.flexible_form)
-
-        #     label_4 = QLabel("High Temperature")
-        #     self.high_temp_form = QCheckBox()
-        #     self.high_temp_form.setStyleSheet(
-        #         """
-        #             QCheckBox::indicator {
-        #                 image: url(assets/High Temp.PNG);
-        #             }
-        #         """
-        #     )
-        #     self.high_temp_form.toggled.connect(
-        #         lambda x: [
-        #             self.high_temp_form.setStyleSheet(
-        #                 """QCheckBox::indicator {
-        #                 image: url(assets/High Temp.PNG);
-        #                 border: 0.5px solid red;}
-        #         """
-        #             ),
-        #             self.version_combo_box.clear(),
-        #             self.version_combo_box.addItems(
-        #                 list(
-        #                     map(
-        #                         lambda x: str(x),
-        #                         set(
-        #                             self.data["prints"]["Version"].loc[
-        #                                 self.data["prints"]["Resin Cartridge"]
-        #                                 == "High Temp"
-        #                             ]
-        #                         ),
-        #                     )
-        #                 )
-        #             ),
-        #             self.cartridge_id_combo_box.clear(),
-        #             self.cartridge_id_combo_box.addItems(
-        #                 list(
-        #                     map(
-        #                         lambda x: str(x),
-        #                         set(
-        #                             self.data["prints"]["CartridgeID"].loc[
-        #                                 self.data["prints"]["Resin Cartridge"]
-        #                                 == "High Temp"
-        #                             ]
-        #                         ),
-        #                     )
-        #                 )
-        #             ),
-        #         ]
-        #         if self.high_temp_form.isChecked()
-        #         else self.high_temp_form.setStyleSheet(
-        #             """QCheckBox::indicator {
-        #                 image: url(assets/High Temp.PNG);
-        #                 border: 0.5px solid black;}"""
-        #         )
-        #     )
-        #     self.high_temp_form.setToolTip("High Temp")
-        #     self.cartridge_button_group.addButton(self.high_temp_form)
-
-        #     label_5 = QLabel("Tough1500")
-        #     self.tough_form = QCheckBox()
-        #     self.tough_form.setStyleSheet(
-        #         """
-        #             QCheckBox::indicator {
-        #                 image: url(assets/Tough1500.PNG);
-        #             }
-        #         """
-        #     )
-        #     self.tough_form.toggled.connect(
-        #         lambda x: [
-        #             self.tough_form.setStyleSheet(
-        #                 """QCheckBox::indicator {
-        #                 image: url(assets/Tough1500.PNG);
-        #                 border: 0.5px solid red;}
-        #         """
-        #             ),
-        #             self.version_combo_box.clear(),
-        #             self.version_combo_box.addItems(
-        #                 list(
-        #                     map(
-        #                         lambda x: str(x),
-        #                         set(
-        #                             self.data["prints"]["Version"].loc[
-        #                                 self.data["prints"]["Resin Cartridge"]
-        #                                 == "Tough 1500"
-        #                             ]
-        #                         ),
-        #                     )
-        #                 )
-        #             ),
-        #             self.cartridge_id_combo_box.clear(),
-        #             self.cartridge_id_combo_box.addItems(
-        #                 list(
-        #                     map(
-        #                         lambda x: str(x),
-        #                         set(
-        #                             self.data["prints"]["CartridgeID"].loc[
-        #                                 self.data["prints"]["Resin Cartridge"]
-        #                                 == "Tough 1500"
-        #                             ]
-        #                         ),
-        #                     )
-        #                 )
-        #             ),
-        #         ]
-        #         if self.tough_form.isChecked()
-        #         else self.tough_form.setStyleSheet(
-        #             """QCheckBox::indicator {
-        #                 image: url(assets/Tough1500.PNG);
-        #                 border: 0.5px solid black;}"""
-        #         )
-        #     )
-        #     self.tough_form.setToolTip("Tough 1500")
-        #     self.cartridge_button_group.addButton(self.tough_form)
-
-        #     self.version_label = QLabel("Resin version:")
-        #     self.version_combo_box = QComboBox()
-        #     self.version_combo_box.addItems(
-        #         list(map(lambda x: str(x), set(self.data["prints"]["Version"])))
-        #     )
-        #     self.version_field = QLineEdit()
-        #     regex_1 = QRegExp("[0-9]+")
-        #     validator_1 = QRegExpValidator(regex_1)
-        #     self.version_field.setValidator(validator_1)
-        #     self.version_combo_box.setLineEdit(self.version_field)
-        #     self.version_label.setBuddy(self.version_combo_box)
-        #     self.version_combo_box.setCurrentIndex(-1)
-        #     self.version_combo_box.currentTextChanged.connect(
-        #         lambda x: self.version_combo_box.setStyleSheet(
-        #             "border: 0.5px solid black"
-        #         )
-        #     )
-
-        #     self.cartridge_id_label = QLabel("Cartridge ID:")
-        #     self.cartridge_id_field = QLineEdit()
-        #     regex_2 = QRegExp("[0-999]+")
-        #     validator_2 = QRegExpValidator(regex_2)
-        #     self.cartridge_id_field.setValidator(validator_2)
-        #     self.cartridge_id_combo_box = QComboBox()
-        #     self.cartridge_id_combo_box.addItems(
-        #         list(map(lambda x: str(x), set(self.data["prints"]["CartridgeID"])))
-        #     )
-        #     self.cartridge_id_label.setBuddy(self.cartridge_id_combo_box)
-        #     self.cartridge_id_combo_box.setLineEdit(self.cartridge_id_field)
-        #     self.cartridge_id_combo_box.setCurrentIndex(-1)
-        #     self.cartridge_id_combo_box.currentTextChanged.connect(
-        #         lambda x: self.cartridge_id_combo_box.setStyleSheet(
-        #             "border: 0.5px solid black"
-        #         )
-        #     )
-
-        #     self.cartridge_grid.addWidget(label, 1, 0)
-        #     self.cartridge_grid.addWidget(self.clear_form, 0, 0)
-        #     self.cartridge_grid.addWidget(label_1, 1, 1)
-        #     self.cartridge_grid.addWidget(self.durable_form, 0, 1)
-        #     self.cartridge_grid.addWidget(label_2, 1, 2)
-        #     self.cartridge_grid.addWidget(self.elastic_form, 0, 2)
-        #     self.cartridge_grid.addWidget(label_3, 3, 0)
-        #     self.cartridge_grid.addWidget(self.flexible_form, 2, 0)
-        #     self.cartridge_grid.addWidget(label_4, 3, 1)
-        #     self.cartridge_grid.addWidget(self.high_temp_form, 2, 1)
-        #     self.cartridge_grid.addWidget(label_5, 3, 2)
-        #     self.cartridge_grid.addWidget(self.tough_form, 2, 2)
-        #     self.cartridge_grid.addWidget(self.version_label, 4, 0)
-        #     self.cartridge_grid.addWidget(self.version_combo_box, 5, 0)
-        #     self.cartridge_grid.addWidget(self.cartridge_id_label, 4, 1)
-        #     self.cartridge_grid.addWidget(self.cartridge_id_combo_box, 5, 1)
-
-        #     self.resin_tank_combo_box.clear()
-        #     self.resin_tank_combo_box.addItems(
-        #         list(
-        #             map(
-        #                 lambda x: str(x),
-        #                 set(
-        #                     self.data["prints"]["Resin Tank"].loc[
-        #                         self.data["prints"]["Printer"] == "Form 2"
-        #                     ]
-        #                 ),
-        #             )
-        #         )
-        #     )
-
-        #     self.tank_id_combo_box.clear()
-        #     self.tank_id_combo_box.addItems(
-        #         list(
-        #             map(
-        #                 lambda x: str(x),
-        #                 set(
-        #                     self.data["prints"]["TankID"].loc[
-        #                         (self.data["prints"]["Printer"] == "Form 2")
-        #                     ]
-        #                 ),
-        #             )
-        #         )
-        #     )
-        # elif self.form3_button.isChecked():
-        #     label = QLabel("Clear")
-        #     self.clear_form = QCheckBox()
-        #     self.clear_form.setStyleSheet(
-        #         """
-        #             QCheckBox::indicator {
-        #                 image: url(assets/Clear.PNG);
-        #             }
-        #         """
-        #     )
-        #     self.clear_form.toggled.connect(
-        #         lambda x: self.clear_form.setStyleSheet(
-        #             """QCheckBox::indicator {
-        #                 image: url(assets/Clear.PNG);
-        #                 border: 0.5px solid red;}
-        #         """
-        #         )
-        #         if self.clear_form.isChecked()
-        #         else self.clear_form.setStyleSheet(
-        #             """QCheckBox::indicator {
-        #                 image: url(assets/Clear.PNG);
-        #                 border: 0.5px solid black;}"""
-        #         )
-        #     )
-        #     self.clear_form.setToolTip("Clear")
-        #     self.cartridge_button_group.addButton(self.clear_form)
-
-        #     label_1 = QLabel("Durable")
-        #     self.durable_form = QCheckBox()
-        #     self.durable_form.setStyleSheet(
-        #         """
-        #             QCheckBox::indicator {
-        #                 image: url(assets/Durable.PNG);
-        #             }
-        #         """
-        #     )
-        #     self.durable_form.toggled.connect(
-        #         lambda x: self.durable_form.setStyleSheet(
-        #             """QCheckBox::indicator {
-        #                 image: url(assets/Durable.PNG);
-        #                 border: 0.5px solid red;}
-        #         """
-        #         )
-        #         if self.durable_form.isChecked()
-        #         else self.durable_form.setStyleSheet(
-        #             """QCheckBox::indicator {
-        #                 image: url(assets/Durable.PNG);
-        #                 border: 0.5px solid black;}"""
-        #         )
-        #     )
-        #     self.durable_form.setToolTip("Durable")
-        #     self.cartridge_button_group.addButton(self.durable_form)
-
-        #     label_2 = QLabel("Elastic")
-        #     self.elastic_form = QCheckBox()
-        #     self.elastic_form.setStyleSheet(
-        #         """
-        #             QCheckBox::indicator {
-        #                 image: url(assets/Elastic.PNG);
-        #             }
-        #         """
-        #     )
-        #     self.elastic_form.toggled.connect(
-        #         lambda x: self.elastic_form.setStyleSheet(
-        #             """QCheckBox::indicator {
-        #                 image: url(assets/Elastic.PNG);
-        #                 border: 0.5px solid red;}
-        #         """
-        #         )
-        #         if self.elastic_form.isChecked()
-        #         else self.elastic_form.setStyleSheet(
-        #             """QCheckBox::indicator {
-        #                 image: url(assets/Elastic.PNG);
-        #                 border: 0.5px solid black;}"""
-        #         )
-        #     )
-        #     self.elastic_form.setToolTip("Elastic")
-        #     self.cartridge_button_group.addButton(self.elastic_form)
-
-        #     label_3 = QLabel("Flexible")
-        #     self.flexible_form = QCheckBox()
-        #     self.flexible_form.setStyleSheet(
-        #         """
-        #             QCheckBox::indicator {
-        #                 image: url(assets/Flexible.PNG);
-        #             }
-        #         """
-        #     )
-        #     self.flexible_form.toggled.connect(
-        #         lambda x: self.flexible_form.setStyleSheet(
-        #             """QCheckBox::indicator {
-        #                 image: url(assets/Flexible.PNG);
-        #                 border: 0.5px solid red;}
-        #         """
-        #         )
-        #         if self.flexible_form.isChecked()
-        #         else self.flexible_form.setStyleSheet(
-        #             """QCheckBox::indicator {
-        #                 image: url(assets/Flexible.PNG);
-        #                 border: 0.5px solid black;}"""
-        #         )
-        #     )
-        #     self.flexible_form.setToolTip("Flexible")
-        #     self.cartridge_button_group.addButton(self.flexible_form)
-
-        #     label_4 = QLabel("High Temperature")
-        #     self.high_temp_form = QCheckBox()
-        #     self.high_temp_form.setStyleSheet(
-        #         """
-        #             QCheckBox::indicator {
-        #                 image: url(assets/High Temp.PNG);
-        #             }
-        #         """
-        #     )
-        #     self.high_temp_form.toggled.connect(
-        #         lambda x: self.high_temp_form.setStyleSheet(
-        #             """QCheckBox::indicator {
-        #                 image: url(assets/High Temp.PNG);
-        #                 border: 0.5px solid red;}
-        #         """
-        #         )
-        #         if self.high_temp_form.isChecked()
-        #         else self.high_temp_form.setStyleSheet(
-        #             """QCheckBox::indicator {
-        #                 image: url(assets/High Temp.PNG);
-        #                 border: 0.5px solid black;}"""
-        #         )
-        #     )
-        #     self.high_temp_form.setToolTip("High Temp")
-        #     self.cartridge_button_group.addButton(self.high_temp_form)
-
-        #     label_5 = QLabel("Tough1500")
-        #     self.tough_form = QCheckBox()
-        #     self.tough_form.setStyleSheet(
-        #         """
-        #             QCheckBox::indicator {
-        #                 image: url(assets/Tough1500.PNG);
-        #             }
-        #         """
-        #     )
-        #     self.tough_form.toggled.connect(
-        #         lambda x: self.tough_form.setStyleSheet(
-        #             """QCheckBox::indicator {
-        #                 image: url(assets/Tough1500.PNG);
-        #                 border: 0.5px solid red;}
-        #         """
-        #         )
-        #         if self.tough_form.isChecked()
-        #         else self.tough_form.setStyleSheet(
-        #             """QCheckBox::indicator {
-        #                 image: url(assets/Tough1500.PNG);
-        #                 border: 0.5px solid black;}"""
-        #         )
-        #     )
-        #     self.tough_form.setToolTip("Tough 1500")
-        #     self.cartridge_button_group.addButton(self.tough_form)
-
-        #     self.version_label = QLabel("Resin version:")
-        #     self.version_combo_box = QComboBox()
-        #     self.version_combo_box.addItems(
-        #         list(map(lambda x: str(x), set(self.data["prints"]["Version"])))
-        #     )
-        #     self.version_field = QLineEdit()
-        #     regex_1 = QRegExp("[0-9]+")
-        #     validator_1 = QRegExpValidator(regex_1)
-        #     self.version_field.setValidator(validator_1)
-        #     self.version_combo_box.setLineEdit(self.version_field)
-        #     self.version_label.setBuddy(self.version_combo_box)
-        #     self.version_combo_box.setCurrentIndex(-1)
-        #     self.version_combo_box.currentTextChanged.connect(
-        #         lambda x: self.version_combo_box.setStyleSheet(
-        #             "border: 0.5px solid black"
-        #         )
-        #     )
-
-        #     self.cartridge_id_label = QLabel("Cartridge ID:")
-        #     self.cartridge_id_field = QLineEdit()
-        #     regex_2 = QRegExp("[0-999]+")
-        #     validator_2 = QRegExpValidator(regex_2)
-        #     self.cartridge_id_field.setValidator(validator_2)
-        #     self.cartridge_id_combo_box = QComboBox()
-        #     self.cartridge_id_combo_box.addItems(
-        #         list(map(lambda x: str(x), set(self.data["prints"]["CartridgeID"])))
-        #     )
-        #     self.cartridge_id_label.setBuddy(self.cartridge_id_combo_box)
-        #     self.cartridge_id_combo_box.setLineEdit(self.cartridge_id_field)
-        #     self.cartridge_id_combo_box.setCurrentIndex(-1)
-        #     self.cartridge_id_combo_box.currentTextChanged.connect(
-        #         lambda x: self.cartridge_id_combo_box.setStyleSheet(
-        #             "border: 0.5px solid black"
-        #         )
-        #     )
-
-        #     self.cartridge_grid.addWidget(label, 1, 0)
-        #     self.cartridge_grid.addWidget(self.clear_form, 0, 0)
-        #     self.cartridge_grid.addWidget(label_1, 1, 1)
-        #     self.cartridge_grid.addWidget(self.durable_form, 0, 1)
-        #     self.cartridge_grid.addWidget(label_2, 1, 2)
-        #     self.cartridge_grid.addWidget(self.elastic_form, 0, 2)
-        #     self.cartridge_grid.addWidget(label_3, 3, 0)
-        #     self.cartridge_grid.addWidget(self.flexible_form, 2, 0)
-        #     self.cartridge_grid.addWidget(label_4, 3, 1)
-        #     self.cartridge_grid.addWidget(self.high_temp_form, 2, 1)
-        #     self.cartridge_grid.addWidget(label_5, 3, 2)
-        #     self.cartridge_grid.addWidget(self.tough_form, 2, 2)
-        #     self.cartridge_grid.addWidget(self.version_label, 4, 0)
-        #     self.cartridge_grid.addWidget(self.version_combo_box, 5, 0)
-        #     self.cartridge_grid.addWidget(self.cartridge_id_label, 4, 1)
-        #     self.cartridge_grid.addWidget(self.cartridge_id_combo_box, 5, 1)
-
-        # elif self.cadworks_button.isChecked():
-        #     label = QLabel("Clear")
-        #     self.clear_form = QCheckBox()
-        #     self.clear_form.setStyleSheet(
-        #         """
-        #             QCheckBox::indicator {
-        #                 image: url(assets/Clear_cadworks.PNG);
-        #                 height:100%;
-        #                 width:100%;
-        #             }
-        #         """
-        #     )
-        #     self.clear_form.toggled.connect(
-        #         lambda x: self.clear_form.setStyleSheet(
-        #             """QCheckBox::indicator {
-        #                 image: url(assets/Clear_cadworks.PNG);
-        #                 height:100%;
-        #                 width:100%;
-        #                 border: 0.5px solid red;}
-        #         """
-        #         )
-        #         if self.clear_form.isChecked()
-        #         else self.clear_form.setStyleSheet(
-        #             """QCheckBox::indicator {
-        #                 image: url(assets/Clear_cadworks.PNG);
-        #                 height:100%;
-        #                 width:100%;
-        #                 border: 0.5px solid black;}"""
-        #         )
-        #     )
-        #     self.cartridge_button_group.addButton(self.clear_form)
-
-        #     label_1 = QLabel("Master mold")
-        #     self.durable_form = QCheckBox()
-        #     self.durable_form.setStyleSheet(
-        #         """
-        #             QCheckBox::indicator {
-        #                 image: url(assets/Master_mold_resin.PNG);
-        #                 height:100%;
-        #                 width:100%;
-        #             }
-        #         """
-        #     )
-        #     self.durable_form.toggled.connect(
-        #         lambda x: self.durable_form.setStyleSheet(
-        #             """QCheckBox::indicator {
-        #                 image: url(assets/Master_mold_resin.PNG);
-        #                 height:100%;
-        #                 width:100%;
-        #                 border: 0.5px solid red;}
-        #         """
-        #         )
-        #         if self.durable_form.isChecked()
-        #         else self.durable_form.setStyleSheet(
-        #             """QCheckBox::indicator {
-        #                 image: url(assets/Master_mold_resin.PNG);
-        #                 height:100%;
-        #                 width:100%;
-        #                 border: 0.5px solid black;}"""
-        #         )
-        #     )
-        #     self.cartridge_button_group.addButton(self.durable_form)
-
-        #     self.version_label = QLabel("Resin version:")
-        #     self.version_combo_box = QComboBox()
-        #     self.version_combo_box.addItems(
-        #         list(map(lambda x: str(x), set(self.data["prints"]["Version"])))
-        #     )
-        #     self.version_field = QLineEdit()
-        #     regex_1 = QRegExp("[0-9]+")
-        #     validator_1 = QRegExpValidator(regex_1)
-        #     self.version_field.setValidator(validator_1)
-        #     self.version_combo_box.setLineEdit(self.version_field)
-        #     self.version_label.setBuddy(self.version_combo_box)
-        #     self.version_combo_box.setCurrentIndex(-1)
-        #     self.version_combo_box.currentTextChanged.connect(
-        #         lambda x: self.version_combo_box.setStyleSheet(
-        #             "border: 0.5px solid black"
-        #         )
-        #     )
-
-        #     self.cartridge_id_label = QLabel("Cartridge ID:")
-        #     self.cartridge_id_field = QLineEdit()
-        #     regex_2 = QRegExp("[0-999]+")
-        #     validator_2 = QRegExpValidator(regex_2)
-        #     self.cartridge_id_field.setValidator(validator_2)
-        #     self.cartridge_id_combo_box = QComboBox()
-        #     self.cartridge_id_combo_box.addItems(
-        #         list(map(lambda x: str(x), set(self.data["prints"]["CartridgeID"])))
-        #     )
-        #     self.cartridge_id_label.setBuddy(self.cartridge_id_combo_box)
-        #     self.cartridge_id_combo_box.setLineEdit(self.cartridge_id_field)
-        #     self.cartridge_id_combo_box.setCurrentIndex(-1)
-        #     self.cartridge_id_combo_box.currentTextChanged.connect(
-        #         lambda x: self.cartridge_id_combo_box.setStyleSheet(
-        #             "border: 0.5px solid black"
-        #         )
-        #     )
-
-        #     self.cartridge_grid.addWidget(label, 1, 0)
-        #     self.cartridge_grid.addWidget(self.clear_form, 0, 0)
-        #     self.cartridge_grid.addWidget(label_1, 1, 1)
-        #     self.cartridge_grid.addWidget(self.durable_form, 0, 1)
-        #     self.cartridge_grid.addWidget(self.version_label, 2, 0)
-        #     self.cartridge_grid.addWidget(self.version_combo_box, 3, 0)
-        #     self.cartridge_grid.addWidget(self.cartridge_id_label, 2, 1)
-        #     self.cartridge_grid.addWidget(self.cartridge_id_combo_box, 3, 1)
+        self.cartridge_button_group.addButton(add_resin_button)
+        self.cartridge_grid.addWidget(add_resin_button, 0, counter)
 
         logger.info("Updating resins selection")
 
@@ -2109,22 +1396,14 @@ class Tracker(QWidget):
             self.prints.pop()
 
     def export_prints(self):
-        filename = QFileDialog.getSaveFileName(
-            self,
-            "Save configuration",
-            os.getcwd(),
-        )
+        filename = QFileDialog.getSaveFileName(self, "Save configuration", os.getcwd(),)
 
         if filename[0]:
             with pd.ExcelWriter(filename[0] + ".xlsx") as writer:
                 self.data["prints"].to_excel(writer, sheet_name="Tracking", index=False)
 
     def export_cartridges(self):
-        filename = QFileDialog.getSaveFileName(
-            self,
-            "Save configuration",
-            os.getcwd(),
-        )
+        filename = QFileDialog.getSaveFileName(self, "Save configuration", os.getcwd(),)
 
         if filename[0]:
             with pd.ExcelWriter(filename[0] + ".xlsx") as writer:
@@ -2135,11 +1414,7 @@ class Tracker(QWidget):
         logger.info("Exporting cartridges to excel sheet")
 
     def export_tanks(self):
-        filename = QFileDialog.getSaveFileName(
-            self,
-            "Save configuration",
-            os.getcwd(),
-        )
+        filename = QFileDialog.getSaveFileName(self, "Save configuration", os.getcwd(),)
 
         if filename[0]:
             with pd.ExcelWriter(filename[0] + ".xlsx") as writer:
@@ -2693,8 +1968,6 @@ class Tracker(QWidget):
             self.data["maintenance"] = df4
             logger.info("No data found, uploading data from excel sheet")
 
-            # print(self.data["prints"].iloc[self.data["prints"].shape[0], :])
-
     def render_printer_section(self) -> QTabWidget:
         printer_tab = QTabWidget()
         printers_tab_content = QWidget()
@@ -2716,24 +1989,7 @@ class Tracker(QWidget):
                 }
             """
             )
-            _.toggled.connect(
-                lambda x: _.setStyleSheet(
-                    """QCheckBox::indicator {
-                image: url(assets/Printers/"""
-                    + item
-                    + """);
-                border: 0.5px solid red;}
-                """
-                )
-                if _.isChecked()
-                else _.setStyleSheet(
-                    """QCheckBox::indicator {
-                        image: url(assets/Printers/"""
-                    + item
-                    + """);
-                        border: 0.5px solid transparent;}"""
-                )
-            )
+            _.toggled.connect(self.highlight_selected_printer)
             _.setToolTip(item[:-4])
             _.toggled.connect(self.update_cartridges)
 
@@ -2754,17 +2010,98 @@ class Tracker(QWidget):
             self.ui_vertical.removeRow(0)
         self.ui_vertical.insertRow(0, printer_tab)
 
+    def render_tanks_section(self) -> QTabWidget:
+        tanks_tab = QTabWidget()
+        tanks_tab_content = QWidget()
+        tanks_tab.addTab(tanks_tab_content, "Select a Tank:")
+        self.tank_button_group = QButtonGroup(exclusive=True)
+        tank_horizontal = QHBoxLayout()
+
+        current_dir = os.getcwd()
+        dir_items = os.listdir(current_dir + "/assets/Tanks/")
+
+        for item in dir_items:
+            _ = QCheckBox()
+            _.setStyleSheet(
+                """
+                QCheckBox::indicator {
+                    image: url(assets/Tanks/"""
+                + item
+                + """);
+                }
+            """
+            )
+            # _.setIconSize(QSize(50, 50))
+            # _.toggled.connect(self.highlight_selected_printer)
+            _.setToolTip(item[:-4])
+            # _.toggled.connect(self.update_cartridges)
+
+            self.tank_button_group.addButton(_)
+            tank_horizontal.addWidget(_)
+
+        add_printer_button = QPushButton()
+        add_printer_button.setIcon(QIcon("assets/plus-solid.svg"))
+        add_printer_button.setFixedSize(QSize(40, 40))
+        add_printer_button.setToolTip("Add new tank")
+        add_printer_button.clicked.connect(self.save_tank)
+
+        self.tank_button_group.addButton(add_printer_button)
+        tank_horizontal.addWidget(add_printer_button)
+        tanks_tab_content.setLayout(tank_horizontal)
+
+        self.ui_vertical.insertRow(2, tanks_tab)
+
+    def highlight_selected_printer(self):
+        printer = self.printer_button_group.button(
+            self.printer_button_group.checkedId()
+        ).toolTip()
+        for button in self.printer_button_group.buttons():
+            if button.isChecked():
+                if self.preliminary_vbox.itemAtPosition(1, 1) is not None:
+                    self.preliminary_vbox.removeWidget(
+                        self.preliminary_vbox.itemAtPosition(1, 1).widget()
+                    )
+                self.preliminary_vbox.addWidget(QLabel(f"{printer}"), 1, 1)
+                button.setStyleSheet(
+                    """QCheckBox::indicator {
+                                image: url(assets/Printers/"""
+                    + printer
+                    + """);
+                                border: 1px solid red;}
+                        """
+                )
+
+            else:
+                button.setStyleSheet(
+                    """QCheckBox::indicator {
+                            image: url(assets/Printers/"""
+                    + button.toolTip()
+                    + """);
+                            border: 0px solid black;}"""
+                )
+
     def save_printer(self):
-        input_window = Printer_addition(self)
-        input_window.input()
+        self.input_window = Printer_addition()
+        self.input_window.input()
+        self.input_window.show()
         logger.info("Trying to add new printer")
+
+    def save_resin(self):
+        self.input_window = Consummables_addition(self)
+        self.input_window.input()
+        self.input_window.show()
+        logger.info("Trying to add new resin")
+
+    def save_tank(self):
+        self.input_window = Tank_addition(self)
+        self.input_window.input()
+        self.input_window.show()
+        logger.info("Trying to add new tank")
 
     def save_printer_image(self):
         dir = os.getcwd()
         filename = QFileDialog.getOpenFileName(
-            self,
-            "Upload configuration",
-            os.getcwd(),
+            self, "Upload configuration", os.getcwd(),
         )
 
         if filename[0]:
