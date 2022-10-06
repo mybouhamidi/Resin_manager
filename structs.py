@@ -189,6 +189,7 @@ class Tank_addition(QMainWindow):
         # self.tanks_id_field.setValidator(validator_2)
         self.tanks_id_label.setBuddy(self.tanks_id_combo_box)
         self.tanks_id_combo_box.setLineEdit(self.tanks_id_field)
+        self.tanks_id_field.setMaximumWidth(220)
 
         self.tanks_resin_label = QLabel("Resin Tank:")
         self.tanks_resin_field = QLineEdit()
@@ -199,6 +200,7 @@ class Tank_addition(QMainWindow):
         self.tanks_resin_combo_box.setCurrentIndex(-1)
         self.tanks_resin_label.setBuddy(self.tanks_resin_combo_box)
         self.tanks_resin_combo_box.setLineEdit(self.tanks_resin_field)
+        self.tanks_resin_field.setMaximumWidth(220)
 
         self.tanks_resin_fill_label = QLabel("Resin fill:")
         self.tanks_resin_fill_field = QLineEdit()
@@ -209,6 +211,7 @@ class Tank_addition(QMainWindow):
         self.tanks_resin_fill_combo_box.setCurrentIndex(-1)
         self.tanks_resin_fill_label.setBuddy(self.tanks_resin_fill_combo_box)
         self.tanks_resin_fill_combo_box.setLineEdit(self.tanks_resin_fill_field)
+        self.tanks_resin_fill_field.setMaximumWidth(220)
 
         self.version_tanks_label = QLabel("Version:")
         self.version_tanks_combo_box = QComboBox()
@@ -220,9 +223,11 @@ class Tank_addition(QMainWindow):
         # self.version_tanks_field.setValidator(validator_1)
         self.version_tanks_combo_box.setLineEdit(self.version_tanks_field)
         self.version_tanks_label.setBuddy(self.version_tanks_combo_box)
+        self.version_tanks_field.setMaximumWidth(220)
 
         self.tanks_total_volume_label = QLabel("Total print volume (mL):")
         self.tanks_total_volume_field = QLineEdit()
+        self.tanks_total_volume_field.setMaximumWidth(220)
         # self.tanks_total_volume_field.setValidator(validator_3)
 
         self.tanks_status_label = QLabel("Status:")
@@ -232,6 +237,7 @@ class Tank_addition(QMainWindow):
         self.tanks_status_combo_box.setCurrentIndex(-1)
         self.tanks_status_label.setBuddy(self.tanks_status_combo_box)
         self.tanks_status_combo_box.setLineEdit(self.tanks_status_field)
+        self.tanks_status_field.setMaximumWidth(220)
 
         self.tanks_company_label = QLabel("Company:")
         self.tanks_company_field = QLineEdit()
@@ -240,14 +246,17 @@ class Tank_addition(QMainWindow):
         self.tanks_company_combo_box.setCurrentIndex(-1)
         self.tanks_company_label.setBuddy(self.tanks_company_combo_box)
         self.tanks_company_combo_box.setLineEdit(self.tanks_company_field)
+        self.tanks_company_field.setMaximumWidth(220)
 
         self.tanks_opened_date_label = QLabel("Opened date:")
         self.tanks_opened_date_field = QLineEdit()
         self.tanks_opened_date_field.setText(datetime.now().strftime("%Y/%m/%d"))
         # self.tanks_opened_date_field.setValidator(validator)
+        self.tanks_opened_date_field.setMaximumWidth(220)
 
         self.tanks_comments_label = QLabel("Comments:")
         self.tanks_comments_field = QLineEdit()
+        self.tanks_comments_field.setMaximumWidth(220)
 
         grid_tanks.addWidget(self.tanks_id_label, 0, 0)
         grid_tanks.addWidget(self.tanks_id_combo_box, 1, 0)
@@ -271,7 +280,7 @@ class Tank_addition(QMainWindow):
         printers_add = QPushButton()
         printers_add.setIcon(QIcon("assets/plus-solid.svg"))
         printers_add.setToolTip("Append tank to configuration")
-        grid_tanks.addWidget(printers_add)
+        grid_tanks.addWidget(printers_add, 10, 0)
         main_layout.setLayout(grid_tanks)
 
         self.setCentralWidget(main_layout)
