@@ -65,8 +65,8 @@ logger = logging.getLogger("app.py")
 
 
 class Tracker(QWidget):
-    def __init__(self, parent: QWidget = None) -> None:
-        super().__init__(parent)
+    def __init__(self) -> None:
+        super().__init__()
 
         self.settings = QSettings("app", "app")
         self.load_config()
@@ -120,11 +120,11 @@ class Tracker(QWidget):
         self.preliminary_vbox.addWidget(QLabel("The printer selected is:"), 1, 0)
         self.preliminary_vbox.addWidget(QLabel("The resin selected is:"), 2, 0)
         self.preliminary_vbox.addWidget(QLabel("The tank selected is:"), 3, 0)
+
         self.ui_vbox.addLayout(self.preliminary_vbox)
         self.ui_vertical = QFormLayout()
         self.render_printer_section()
         self.ui_vertical.addRow(cartridge_tab)
-        self.render_tanks_section()
         self.ui_hbox.addLayout(self.ui_vbox)
         self.ui_hbox.addLayout(self.ui_vertical)
         self.tab_ui.setWidget(widget_prints)
@@ -143,6 +143,7 @@ class Tracker(QWidget):
         self.delete_prints.setToolTip("Delete print from table")
         self.delete_prints.pressed.connect(self.delete_print)
         self.confirm_prints.pressed.connect(self.validate_prints)
+        self.preliminary_vbox.addWidget(self.confirm_prints, 4, 0, 1, 1)
         vertical_prints = QVBoxLayout()
         horizontal_prints = QHBoxLayout()
         grid_prints = QGridLayout()
@@ -216,19 +217,6 @@ class Tracker(QWidget):
         )
         self.cartridge_id_field.setMaximumWidth(220)
 
-        self.resin_tank_label = QLabel("Resin tank:")
-        self.resin_tank_field = QLineEdit()
-        self.resin_tank_combo_box = QComboBox()
-        self.resin_tank_combo_box.addItems(set(self.data["prints"]["Resin Tank"]))
-        self.resin_tank_label.setBuddy(self.resin_tank_combo_box)
-        self.resin_tank_combo_box.setLineEdit(self.resin_tank_field)
-        self.resin_tank_combo_box.setCurrentIndex(-1)
-        self.resin_tank_combo_box.currentTextChanged.connect(
-            lambda x: self.resin_tank_combo_box.setStyleSheet(
-                "border: 0.5px solid black"
-            )
-        )
-
         self.tank_id_label = QLabel("Tank ID:")
         self.tank_id_field = QLineEdit()
         self.tank_id_field.setValidator(validator_2)
@@ -254,7 +242,7 @@ class Tracker(QWidget):
 
         self.tank_fill_label = QLabel("Tank fill (~260 mL):")
         self.tank_fill_field = QLineEdit()
-        regex_4 = QRegExp("^[Yes]|^[No]|^[no]|^[yes]$")
+        regex_4 = QRegExp("^[no]|^[yes]$")
         validator_4 = QRegExpValidator(regex_4)
         self.tank_fill_field.setValidator(validator_4)
         self.tank_fill_combo_box = QComboBox()
@@ -280,22 +268,7 @@ class Tracker(QWidget):
         self.comments_label = QLabel("Comments:")
         self.comments_field = QLineEdit()
 
-        # self.tank_grid.addWidget(self.resin_tank_label, 0, 0)
-        # self.tank_grid.addWidget(self.resin_tank_combo_box, 1, 0)
-        # self.tank_grid.addWidget(self.tank_id_label, 0, 1)
-        # self.tank_grid.addWidget(self.tank_id_combo_box, 1, 1)
-        # self.tank_grid.addWidget(self.volume_used_label, 0, 2)
-        # self.tank_grid.addWidget(self.volume_used_field, 1, 2)
-        # self.tank_grid.addWidget(self.tank_fill_label, 2, 0)
-        # self.tank_grid.addWidget(self.tank_fill_combo_box, 3, 0)
-        # self.tank_grid.addWidget(self.fail_label, 2, 1)
-        # self.tank_grid.addWidget(self.fail_combo_box, 3, 1)
-        # self.tank_grid.addWidget(self.comments_label, 2, 2)
-        # self.tank_grid.addWidget(self.comments_field, 3, 2)
-        # ui_vertical.addWidget(self.print_date)
-        # ui_vertical.addWidget(self.print_date_field)
-        # ui_vertical.addWidget(self.confirm_prints)
-
+        self.render_tanks_section()
         export = QPushButton()
         export.pressed.connect(self.export_prints)
         export.setIcon(QIcon("assets/download-solid.svg"))
@@ -336,86 +309,7 @@ class Tracker(QWidget):
         # Resins tab
         vertical_resins_spliter = QVBoxLayout()
         horizontal_resins = QHBoxLayout()
-        # grid_resins = QGridLayout()
 
-        # self.cartridge_id_resins_label = QLabel("Cartridge ID:")
-        # self.cartridge_id_resins_field = QLineEdit()
-        # self.cartridge_id_resins_field.setValidator(validator_2)
-        # self.cartridge_id_resins_combo_box = QComboBox()
-        # self.cartridge_id_resins_combo_box.addItems(
-        #     list(map(lambda x: str(x), set(self.data["resins"]["CartridgeID.1"])))
-        # )
-        # self.cartridge_id_resins_combo_box.setCurrentIndex(-1)
-        # self.cartridge_id_resins_label.setBuddy(self.cartridge_id_resins_combo_box)
-        # self.cartridge_id_resins_combo_box.setLineEdit(self.cartridge_id_resins_field)
-        # self.cartridge_id_resins_combo_box.currentTextChanged.connect(
-        #     lambda x: self.cartridge_id_resins_combo_box.setStyleSheet(
-        #         "border: 0.5px solid black"
-        #     )
-        # )
-
-        # self.resin_type_resins_label = QLabel("Resin type:")
-        # self.resin_type_resins_field = QLineEdit()
-        # self.resin_type_resins_combo_box = QComboBox()
-        # self.resin_type_resins_combo_box.addItems(
-        #     list(map(lambda x: str(x), set(self.data["resins"]["Resin Cartridge.1"])))
-        # )
-        # self.resin_type_resins_combo_box.setCurrentIndex(-1)
-        # self.resin_type_resins_label.setBuddy(self.resin_type_resins_combo_box)
-        # self.resin_type_resins_combo_box.setLineEdit(self.resin_type_resins_field)
-        # self.resin_type_resins_combo_box.currentTextChanged.connect(
-        #     lambda x: self.resin_type_resins_combo_box.setStyleSheet(
-        #         "border: 0.5px solid black"
-        #     )
-        # )
-
-        # self.version_resins_label = QLabel("Version:")
-        # self.version_resins_combo_box = QComboBox()
-        # self.version_resins_combo_box.addItems(
-        #     list(map(lambda x: str(x), set(self.data["resins"]["Version.1"])))
-        # )
-        # self.version_resins_combo_box.setCurrentIndex(-1)
-        # self.version_resins_field = QLineEdit()
-        # self.version_resins_field.setValidator(validator_1)
-        # self.version_resins_combo_box.setLineEdit(self.version_resins_field)
-        # self.version_resins_label.setBuddy(self.version_resins_combo_box)
-        # self.version_resins_combo_box.currentTextChanged.connect(
-        #     lambda x: self.version_resins_combo_box.setStyleSheet(
-        #         "border: 0.5px solid black"
-        #     )
-        # )
-
-        # self.batch_date_resins_label = QLabel("Batch date (YYYY/MM/DD):")
-        # self.batch_date_resins_field = QLineEdit()
-        # self.batch_date_resins_field.setText(datetime.now().strftime("%Y/%m/%d"))
-        # self.batch_date_resins_field.setValidator(validator)
-        # self.batch_date_resins_field.textChanged.connect(
-        #     lambda x: self.batch_date_resins_field.setStyleSheet(
-        #         "border: 0.5px solid black"
-        #     )
-        # )
-
-        # self.resins_company_label = QLabel("Company:")
-        # self.resins_company_field = QLineEdit()
-        # self.resins_company_combo_box = QComboBox()
-        # self.resins_company_combo_box.addItems(["FormLabs", "CadWorks"])
-        # self.resins_company_combo_box.setCurrentIndex(-1)
-        # self.resins_company_label.setBuddy(self.resins_company_combo_box)
-        # self.resins_company_combo_box.setLineEdit(self.resins_company_field)
-
-        # self.comments_resins_label = QLabel("Comments:")
-        # self.comments_resins_field = QLineEdit()
-
-        # grid_resins.addWidget(self.cartridge_id_resins_label, 0, 0)
-        # grid_resins.addWidget(self.cartridge_id_resins_combo_box, 1, 0)
-        # grid_resins.addWidget(self.resin_type_resins_label, 0, 1)
-        # grid_resins.addWidget(self.resin_type_resins_combo_box, 1, 1)
-        # grid_resins.addWidget(self.version_resins_label, 2, 0)
-        # grid_resins.addWidget(self.version_resins_combo_box, 3, 0)
-        # grid_resins.addWidget(self.batch_date_resins_label, 2, 1)
-        # grid_resins.addWidget(self.batch_date_resins_field, 3, 1)
-        # grid_resins.addWidget(self.comments_resins_label, 4, 0)
-        # grid_resins.addWidget(self.comments_resins_field, 5, 0)
         export_cartridge = QPushButton()
         export_cartridge.setIcon(QIcon("assets/download-solid.svg"))
         export_cartridge.setToolTip("Export cartridges table to excel sheet")
@@ -424,9 +318,6 @@ class Tracker(QWidget):
         cartridge_add.setIcon(QIcon("assets/plus-solid.svg"))
         cartridge_add.setToolTip("Append cartridge to table")
         cartridge_add.pressed.connect(self.validate_cartrigdes)
-        # grid_resins.addWidget(cartridge_add, 6, 0)
-        # grid_resins.addWidget(self.resins_company_label, 4, 1)
-        # grid_resins.addWidget(self.resins_company_combo_box, 5, 1)
         cartridge_del = QPushButton()
         cartridge_del.setIcon(QIcon("assets/circle-minus-solid.svg"))
         cartridge_del.setToolTip("Delete cartridge from table")
@@ -480,139 +371,8 @@ class Tracker(QWidget):
         vertical = QVBoxLayout()
         vertical.addLayout(horizontal_resins)
 
-        # Printer tab
-        # tab_printers = QTabWidget()
-        # tab_printers_content = QWidget()
-        # tab_printers.addTab(tab_printers_content, "Printers:")
-
-        # tab_cartridges = QTabWidget()
-        # tab_cartridges_content = QWidget()
-        # tab_cartridges.addTab(tab_cartridges_content, "Cartridges:")
-
-        # tab_tanks = QTabWidget()
-        # tab_tanks_content = QWidget()
-        # tab_tanks.addTab(tab_tanks_content, "Tanks:")
-
-        # horizontal_printers = QHBoxLayout()
-        # grid_printers = QGridLayout()
-
-        # self.printer_name = QLabel("Printer's name:")
-        # self.printer_field = QLineEdit()
-
-        # self.printer_resin_label = QLabel("Printer's type:")
-        # self.printer_resin_field = QLineEdit()
-
-        # self.printer_tank_label = QLabel("Printer's company:")
-        # self.printer_tank_field = QLineEdit()
-
-        # grid_printers.addWidget(self.printer_name, 0, 0)
-        # grid_printers.addWidget(self.printer_field, 1, 0)
-        # grid_printers.addWidget(self.printer_resin_label, 0, 1)
-        # grid_printers.addWidget(self.printer_resin_field, 1, 1)
-        # grid_printers.addWidget(self.printer_tank_label, 0, 2)
-        # grid_printers.addWidget(self.printer_tank_field, 1, 2)
-        # printers_add = QPushButton()
-        # printers_add.setIcon(QIcon("assets/plus-solid.svg"))
-        # printers_add.setToolTip("Append printer to configuration")
-        # grid_printers.addWidget(printers_add, 2, 0)
-        # printers_add.clicked.connect(self.addPrinter)
-
-        # horizontal_printers.addLayout(grid_printers)
-        # tab_printers.setLayout(horizontal_printers)
-        # tab_printers.setFixedHeight(150)
-
-        vertical_tanks = QVBoxLayout()
         horizontal_tanks = QHBoxLayout()
-        # grid_tanks = QGridLayout()
 
-        # self.tanks_id_label = QLabel("Tank ID:")
-        # self.tanks_id_combo_box = QComboBox()
-        # self.tanks_id_combo_box.addItems(
-        #     list(map(lambda x: str(x), set(self.data["tanks"]["TankID.1"])))
-        # )
-        # self.tanks_id_combo_box.setCurrentIndex(-1)
-        # self.tanks_id_field = QLineEdit()
-        # self.tanks_id_field.setValidator(validator_2)
-        # self.tanks_id_label.setBuddy(self.tanks_id_combo_box)
-        # self.tanks_id_combo_box.setLineEdit(self.tanks_id_field)
-
-        # self.tanks_resin_label = QLabel("Resin Tank:")
-        # self.tanks_resin_field = QLineEdit()
-        # self.tanks_resin_combo_box = QComboBox()
-        # self.tanks_resin_combo_box.addItems(
-        #     list(map(lambda x: str(x), set(self.data["tanks"]["Resin Tank.1"])))
-        # )
-        # self.tanks_resin_combo_box.setCurrentIndex(-1)
-        # self.tanks_resin_label.setBuddy(self.tanks_resin_combo_box)
-        # self.tanks_resin_combo_box.setLineEdit(self.tanks_resin_field)
-
-        # self.tanks_resin_fill_label = QLabel("Resin fill:")
-        # self.tanks_resin_fill_field = QLineEdit()
-        # self.tanks_resin_fill_combo_box = QComboBox()
-        # self.tanks_resin_fill_combo_box.addItems(
-        #     list(map(lambda x: str(x), set(self.data["tanks"]["Resin Fill"])))
-        # )
-        # self.tanks_resin_fill_combo_box.setCurrentIndex(-1)
-        # self.tanks_resin_fill_label.setBuddy(self.tanks_resin_fill_combo_box)
-        # self.tanks_resin_fill_combo_box.setLineEdit(self.tanks_resin_fill_field)
-
-        # self.version_tanks_label = QLabel("Version:")
-        # self.version_tanks_combo_box = QComboBox()
-        # self.version_tanks_combo_box.addItems(
-        #     list(map(lambda x: str(x), set(self.data["tanks"]["Version.2"])))
-        # )
-        # self.version_tanks_combo_box.setCurrentIndex(-1)
-        # self.version_tanks_field = QLineEdit()
-        # self.version_tanks_field.setValidator(validator_1)
-        # self.version_tanks_combo_box.setLineEdit(self.version_tanks_field)
-        # self.version_tanks_label.setBuddy(self.version_tanks_combo_box)
-
-        # self.tanks_total_volume_label = QLabel("Total print volume (mL):")
-        # self.tanks_total_volume_field = QLineEdit()
-        # self.tanks_total_volume_field.setValidator(validator_3)
-
-        # self.tanks_status_label = QLabel("Status:")
-        # self.tanks_status_field = QLineEdit()
-        # self.tanks_status_combo_box = QComboBox()
-        # self.tanks_status_combo_box.addItems(set(self.data["tanks"]["Status.1"]))
-        # self.tanks_status_combo_box.setCurrentIndex(-1)
-        # self.tanks_status_label.setBuddy(self.tanks_status_combo_box)
-        # self.tanks_status_combo_box.setLineEdit(self.tanks_status_field)
-
-        # self.tanks_company_label = QLabel("Company:")
-        # self.tanks_company_field = QLineEdit()
-        # self.tanks_company_combo_box = QComboBox()
-        # self.tanks_company_combo_box.addItems(["FormLabs", "CadWorks"])
-        # self.tanks_company_combo_box.setCurrentIndex(-1)
-        # self.tanks_company_label.setBuddy(self.tanks_company_combo_box)
-        # self.tanks_company_combo_box.setLineEdit(self.tanks_company_field)
-
-        # self.tanks_opened_date_label = QLabel("Opened date:")
-        # self.tanks_opened_date_field = QLineEdit()
-        # self.tanks_opened_date_field.setText(datetime.now().strftime("%Y/%m/%d"))
-        # self.tanks_opened_date_field.setValidator(validator)
-
-        # self.tanks_comments_label = QLabel("Comments:")
-        # self.tanks_comments_field = QLineEdit()
-
-        # grid_tanks.addWidget(self.tanks_id_label, 0, 0)
-        # grid_tanks.addWidget(self.tanks_id_combo_box, 1, 0)
-        # grid_tanks.addWidget(self.tanks_resin_label, 0, 1)
-        # grid_tanks.addWidget(self.tanks_resin_combo_box, 1, 1)
-        # grid_tanks.addWidget(self.tanks_resin_fill_label, 2, 0)
-        # grid_tanks.addWidget(self.tanks_resin_fill_combo_box, 3, 0)
-        # grid_tanks.addWidget(self.version_tanks_label, 2, 1)
-        # grid_tanks.addWidget(self.version_tanks_combo_box, 3, 1)
-        # grid_tanks.addWidget(self.tanks_total_volume_label, 4, 0)
-        # grid_tanks.addWidget(self.tanks_total_volume_field, 5, 0)
-        # grid_tanks.addWidget(self.tanks_status_label, 4, 1)
-        # grid_tanks.addWidget(self.tanks_status_combo_box, 5, 1)
-        # grid_tanks.addWidget(self.tanks_opened_date_label, 6, 0)
-        # grid_tanks.addWidget(self.tanks_opened_date_field, 7, 0)
-        # grid_tanks.addWidget(self.tanks_company_label, 6, 1)
-        # grid_tanks.addWidget(self.tanks_company_combo_box, 7, 1)
-        # grid_tanks.addWidget(self.tanks_comments_label, 8, 0)
-        # grid_tanks.addWidget(self.tanks_comments_field, 9, 0)
         export_tanks = QPushButton()
         export_tanks.setIcon(QIcon("assets/download-solid.svg"))
         export_tanks.setToolTip("Export tanks table to excel sheet")
@@ -621,7 +381,7 @@ class Tracker(QWidget):
         tanks_add.setIcon(QIcon("assets/plus-solid.svg"))
         tanks_add.setToolTip("Append tank to table")
         tanks_add.clicked.connect(self.validate_tanks)
-        # grid_tanks.addWidget(tanks_add, 9, 1)
+
         tanks_del = QPushButton()
         tanks_del.setIcon(QIcon("assets/circle-minus-solid.svg"))
         tanks_del.setToolTip("Delete tank from table")
@@ -651,20 +411,12 @@ class Tracker(QWidget):
 
         vertical.addWidget(self.resins_table)
         vertical.addWidget(export_cartridge)
-        horizontal_tanks.addLayout(vertical_tanks)
         vertical_resins_spliter.addWidget(self.tanks)
         vertical_resins_spliter.addWidget(export_tanks)
         horizontal_tanks.addWidget(self.cartridge_table)
-        # tab_tanks.setLayout(grid_tanks)
-        # tab_tanks.setFixedHeight(440)
-        # # tab_cartridges.setLayout(grid_resins)
-        # tab_cartridges.setFixedHeight(300)
 
         components_widget = QWidget()
-        vertical_1 = QFormLayout(components_widget)
-        # vertical_1.addRow(tab_tanks)
-        # vertical_1.addRow(tab_cartridges)
-        # vertical_1.addRow(tab_printers)
+
         self.tab_printers.setWidget(components_widget)
         self.tab_printers.setWidgetResizable(True)
 
@@ -736,7 +488,7 @@ class Tracker(QWidget):
         columns = list(self.data["maintenance"])
         columns.remove("Frequency")
         columns.remove("Procedure")
-        # print(columns)
+
         self.maintenance = {_: None for _ in columns}
         for _ in columns:
             df = self.data["maintenance"].rename(columns={_: "Date"})
@@ -784,159 +536,100 @@ class Tracker(QWidget):
         self.setWindowState(Qt.WindowMaximized)
         self.setWindowIcon(QIcon("assets/cube-solid.svg"))
 
-        # self.load_last_config()
+        self.load_last_config()
         self.show()
         logger.info("UI rendered")
 
     def load_last_config(self):
-        if (
-            self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :]["Printer"]
-            == "Form 2"
-        ):
-            self.form2_button.setChecked(True)
-            if (
-                self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
-                    "Resin Cartridge"
-                ]
-                == "Clear"
-            ):
-                self.clear_form.setChecked(True)
-            elif (
-                self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
-                    "Resin Cartridge"
-                ]
-                == "Durable"
-            ):
-                self.durable_form.setChecked(True)
-            elif (
-                self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
-                    "Resin Cartridge"
-                ]
-                == "Elastic"
-            ):
-                self.elastic_form.setChecked(True)
-            elif (
-                self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
-                    "Resin Cartridge"
-                ]
-                == "Flexible"
-            ):
-                self.flexible_form.setChecked(True)
-            elif (
-                self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
-                    "Resin Cartridge"
-                ]
-                == "High Temp"
-            ):
-                self.high_temp_form.setChecked(True)
-            elif (
-                self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
-                    "Resin Cartridge"
-                ]
-                == "Tough 1500"
-            ):
-                self.tough_form.setChecked(True)
-        elif (
-            self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :]["Printer"]
-            == "Form 3"
-        ):
-            self.form3_button.setChecked(True)
-            if (
-                self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
-                    "Resin Cartridge"
-                ]
-                == "Clear"
-            ):
-                self.clear_form.setChecked(True)
-            elif (
-                self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
-                    "Resin Cartridge"
-                ]
-                == "Durable"
-            ):
-                self.durable_form.setChecked(True)
-            elif (
-                self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
-                    "Resin Cartridge"
-                ]
-                == "Elastic"
-            ):
-                self.elastic_form.setChecked(True)
-            elif (
-                self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
-                    "Resin Cartridge"
-                ]
-                == "Flexible"
-            ):
-                self.flexible_form.setChecked(True)
-            elif (
-                self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
-                    "Resin Cartridge"
-                ]
-                == "High Temp"
-            ):
-                self.high_temp_form.setChecked(True)
-            elif (
-                self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
-                    "Resin Cartridge"
-                ]
-                == "Tough 1500"
-            ):
-                self.tough_form.setChecked(True)
-        else:
-            self.cadworks_button.setChecked(True)
-            if (
-                self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
-                    "Resin Cartridge"
-                ]
-                == "Clear"
-            ):
-                self.clear_form.setChecked(True)
-            elif (
-                self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
-                    "Resin Cartridge"
-                ]
-                == "Master mold"
-            ):
-                self.durable_form.setChecked(True)
+        try:
 
-        self.print_date_field.setText(
-            self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :]["Date"]
-        )
-        self.version_combo_box.setCurrentText(
-            str(
-                self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :]["Version"]
-            )
-        )
-        self.cartridge_id_combo_box.setCurrentText(
-            str(
-                self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
-                    "CartridgeID"
-                ]
-            )
-        )
-        self.resin_tank_combo_box.setCurrentText(
-            self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :]["Resin Tank"]
-        )
-        self.tank_id_combo_box.setCurrentText(
-            str(self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :]["TankID"])
-        )
-
-        self.tank_fill_combo_box.setCurrentText(
-            self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
-                "Tank fill (~260mL)"
+            printer = self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
+                "Printer"
             ]
-        )
+            resin = self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
+                "Resin Cartridge"
+            ]
 
-        self.fail_combo_box.setCurrentText(
-            str(self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :]["Fail"])
-        )
+            tank = self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
+                "Resin Tank"
+            ]
 
-        self.comments_field.setText(
-            str(
-                self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :]["Comment"]
+            for button in self.printer_button_group.buttons():
+                if printer in button.toolTip().replace("_", " "):
+                    button.setChecked(True)
+                    self.printer_button_group.buttonClicked.emit(button)
+
+            for button in self.cartridge_button_group.buttons():
+                if resin in button.toolTip().replace("_", " "):
+                    button.setChecked(True)
+                    self.cartridge_button_group.buttonClicked.emit(button)
+
+            for button in self.tank_button_group.buttons():
+                if tank in button.toolTip().replace("_", " "):
+                    button.setChecked(True)
+                    self.tank_button_group.buttonClicked.emit(button)
+
+            self.print_date_field.setText(
+                self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :]["Date"]
             )
-        )
+
+            self.version_combo_box.setCurrentText(
+                str(
+                    self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
+                        "Version"
+                    ]
+                )
+            )
+
+            self.volume_used_field.setText(
+                str(
+                    self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
+                        "Volume used (mL)"
+                    ]
+                )
+            )
+
+            self.cartridge_id_combo_box.setCurrentText(
+                str(
+                    self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
+                        "CartridgeID"
+                    ]
+                )
+            )
+
+            self.tank_id_combo_box.setCurrentText(
+                str(
+                    self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
+                        "TankID"
+                    ]
+                )
+            )
+
+            self.tank_fill_combo_box.setCurrentText(
+                self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
+                    "Tank fill (~260mL)"
+                ]
+            )
+
+            self.fail_combo_box.setCurrentText(
+                str(
+                    self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
+                        "Fail"
+                    ]
+                )
+            )
+
+            self.comments_field.setText(
+                str(
+                    self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
+                        "Comment"
+                    ]
+                )
+            )
+
+        except Exception as e:
+            logger.error(e)
+            pass
 
     def addMaintenance(self):
         df = pd.DataFrame(
@@ -1035,7 +728,9 @@ class Tracker(QWidget):
                     self.preliminary_vbox.removeWidget(
                         self.preliminary_vbox.itemAtPosition(2, 1).widget()
                     )
-                self.preliminary_vbox.addWidget(QLabel(f"{button.toolTip()}"), 2, 1)
+                self.preliminary_vbox.addWidget(
+                    QLabel(button.toolTip().replace("_", " ")), 2, 1
+                )
                 button.setStyleSheet(
                     """QCheckBox::indicator {
                                 image: url(assets/Resins/"""
@@ -1126,54 +821,20 @@ class Tracker(QWidget):
                         """
                 )
 
-                # widgets = [
-                #     self.print_date,
-                #     self.print_date_field,
-                #     self.version_label,
-                #     self.version_combo_box,
-                #     self.cartridge_id_label,
-                #     self.cartridge_id_combo_box,
-                # ]
-
-                # col = True
-                # counter = 0
-                # for widget in widgets:
-                #     if col:
-                #         self.cartridge_grid.addWidget(widget, 2, counter)
-                #         col = False
-                #     else:
-                #         self.cartridge_grid.addWidget(widget, 3, counter)
-                #         counter += 1
-                #         col = True
-
-                # self.version_combo_box.clear(),
-                # self.version_combo_box.addItems(
-                #     list(
-                #         map(
-                #             lambda x: str(x),
-                #             set(
-                #                 self.data["prints"]["Version"].loc[
-                #                     self.data["prints"]["Resin Cartridge"]
-                #                     == button.toolTip()
-                #                 ]
-                #             ),
-                #         )
-                #     )
-                # ),
-                # self.cartridge_id_combo_box.clear(),
-                # self.cartridge_id_combo_box.addItems(
-                #     list(
-                #         map(
-                #             lambda x: str(x),
-                #             set(
-                #                 self.data["prints"]["CartridgeID"].loc[
-                #                     self.data["prints"]["Resin Cartridge"]
-                #                     == button.toolTip()
-                #                 ]
-                #             ),
-                #         )
-                #     )
-                # )
+                self.tank_id_combo_box.clear()
+                self.tank_id_combo_box.addItems(
+                    list(
+                        map(
+                            lambda x: str(x),
+                            set(
+                                self.data["prints"]["TankID"].loc[
+                                    self.data["prints"]["Resin Tank"]
+                                    == button.toolTip().replace("_", " ")
+                                ]
+                            ),
+                        )
+                    )
+                )
 
             else:
                 button.setStyleSheet(
@@ -1200,7 +861,7 @@ class Tracker(QWidget):
         dir_items = os.listdir(current_dir + "/assets/Resins/" + printer + "/")
 
         for item in dir_items:
-            label = QLabel(item[:-4])
+            label = QLabel(item[:-4].replace("_", " "))
             _ = QCheckBox()
             _.setStyleSheet(
                 """
@@ -1306,9 +967,9 @@ class Tracker(QWidget):
         printer = None
         resin = None
         try:
-            if "Form 2" in self.printer_button_group.checkedButton().toolTip():
+            if "Form_2" in self.printer_button_group.checkedButton().toolTip():
                 printer = "Form 2"
-            elif "Form 3" in self.printer_button_group.checkedButton().toolTip():
+            elif "Form_3" in self.printer_button_group.checkedButton().toolTip():
                 printer = "Form 3"
             elif "CadWorks" in self.printer_button_group.checkedButton().toolTip():
                 printer = "CadWorks µfluidics"
@@ -1342,9 +1003,6 @@ class Tracker(QWidget):
                 valid = False
             if self.cartridge_id_combo_box.currentText() == "":
                 self.cartridge_id_combo_box.setStyleSheet("border: 1px solid red")
-                valid = False
-            if self.resin_tank_combo_box.currentText() == "":
-                self.resin_tank_combo_box.setStyleSheet("border: 1px solid red")
                 valid = False
             if self.tank_id_combo_box.currentText() == "":
                 self.tank_id_combo_box.setStyleSheet("border: 1px solid red")
@@ -1407,7 +1065,6 @@ class Tracker(QWidget):
                 try:
                     if not printer.can_consume(resin):
                         valid = False
-                        self.resin_tank_combo_box.setStyleSheet("border: 1px solid red")
                         error = QErrorMessage(self)
                         error.showMessage(
                             "Please select a resin that matches the printer"
@@ -1417,7 +1074,6 @@ class Tracker(QWidget):
                     if not printer.can_consume(tank):
                         valid = False
                         printer, resin, tank = None, None, None
-                        self.resin_tank_combo_box.setStyleSheet("border: 1px solid red")
                         error = QErrorMessage(self)
                         error.showMessage(
                             "Please select a tank that matches the printer"
@@ -1451,7 +1107,6 @@ class Tracker(QWidget):
 
                 if not prints.can_consume(resin, tank):
                     error = QErrorMessage(self)
-                    self.resin_tank_combo_box.setStyleSheet("border: 1px solid red")
                     error.showMessage("Please select a resin that matches the tank")
                     printer, resin, tank = None, None, None
                     logger.info("Conflict between cartridge and tank")
@@ -1558,10 +1213,8 @@ class Tracker(QWidget):
 
             self.tanks.scrollToBottom()
 
-            self.cartridge_id_resins_combo_box.setStyleSheet(
-                "border: 0.5px solid black"
-            )
-            self.resin_type_resins_combo_box.setStyleSheet("border: 0.5px solid black")
+            self.cartridge_id_combo_box.setStyleSheet("border: 0.5px solid black")
+            self.resin_combo_box.setStyleSheet("border: 0.5px solid black")
         except TypeError:
             self.data["prints"] = self.data["prints"].drop(
                 index=self.data["prints"].shape[0] - 1
@@ -1974,9 +1627,6 @@ class Tracker(QWidget):
         self.tanks_id_combo_box.setStyleSheet("border: 0.5px solid black")
         self.tanks_resin_fill_combo_box.setStyleSheet("border: 0.5px solid black")
 
-        self.resin_tank_combo_box.clear()
-        self.resin_tank_combo_box.addItems(set(self.data["tanks"]["Resin Tank.1"]))
-
         self.tanks_id_combo_box.clear()
         self.tank_id_combo_box.addItems(
             list(map(lambda x: str(x), set(self.data["tanks"]["TankID.1"])))
@@ -2162,12 +1812,14 @@ class Tracker(QWidget):
         printers_tab_content = QWidget()
         printer_tab.addTab(printers_tab_content, "Select a printer:")
         self.printer_button_group = QButtonGroup(exclusive=True)
-        printer_horizontal = QHBoxLayout()
+        grid_prints = QGridLayout()
 
         current_dir = os.getcwd()
         dir_items = os.listdir(current_dir + "/assets/Printers/")
 
+        counter = 0
         for item in dir_items:
+            label = QLabel(item[:-4].replace("_", " "))
             _ = QCheckBox()
             _.setStyleSheet(
                 """
@@ -2182,10 +1834,10 @@ class Tracker(QWidget):
             _.setToolTip(item[:-4])
             _.toggled.connect(self.update_cartridges)
 
-            # print("hereee")
-
             self.printer_button_group.addButton(_)
-            printer_horizontal.addWidget(_)
+            grid_prints.addWidget(_, 0, counter)
+            grid_prints.addWidget(label, 1, counter)
+            counter += 1
 
         add_printer_button = QPushButton()
         add_printer_button.setIcon(QIcon("assets/plus-solid.svg"))
@@ -2194,8 +1846,8 @@ class Tracker(QWidget):
         add_printer_button.clicked.connect(self.save_printer)
 
         self.printer_button_group.addButton(add_printer_button)
-        printer_horizontal.addWidget(add_printer_button)
-        printers_tab_content.setLayout(printer_horizontal)
+        grid_prints.addWidget(add_printer_button, 0, counter)
+        printers_tab_content.setLayout(grid_prints)
 
         if self.ui_vertical.rowCount() > 0:
             self.ui_vertical.removeRow(0)
@@ -2206,8 +1858,7 @@ class Tracker(QWidget):
         tanks_tab_content = QWidget()
         tanks_tab.addTab(tanks_tab_content, "Select a Tank:")
         self.tank_button_group = QButtonGroup(exclusive=True)
-        # tank_vertical = QVBoxLayout()
-        # tank_horizontal = QHBoxLayout()
+
         grid_tanks = QGridLayout()
 
         current_dir = os.getcwd()
@@ -2242,23 +1893,8 @@ class Tracker(QWidget):
         self.tank_button_group.addButton(add_printer_button)
         grid_tanks.addWidget(add_printer_button, 0, counter)
 
-        self.resin_tank_label = QLabel("Resin tank:")
-        self.resin_tank_field = QLineEdit()
-        self.resin_tank_combo_box = QComboBox()
-        self.resin_tank_combo_box.addItems(set(self.data["prints"]["Resin Tank"]))
-        self.resin_tank_label.setBuddy(self.resin_tank_combo_box)
-        self.resin_tank_combo_box.setLineEdit(self.resin_tank_field)
-        self.resin_tank_combo_box.setCurrentIndex(-1)
-        self.resin_tank_combo_box.currentTextChanged.connect(
-            lambda x: self.resin_tank_combo_box.setStyleSheet(
-                "border: 0.5px solid black"
-            )
-        )
-        self.resin_tank_field.setMaximumWidth(220)
-
         self.tank_id_label = QLabel("Tank ID:")
         self.tank_id_field = QLineEdit()
-        # self.tank_id_field.setValidator(validator_2)
         self.tank_id_combo_box = QComboBox()
         self.tank_id_combo_box.addItems(
             list(map(lambda x: str(x), set(self.data["prints"]["TankID"])))
@@ -2283,7 +1919,7 @@ class Tracker(QWidget):
 
         self.tank_fill_label = QLabel("Tank fill (~260 mL):")
         self.tank_fill_field = QLineEdit()
-        regex_4 = QRegExp("^[Yes]|^[No]|^[no]|^[yes]$")
+        regex_4 = QRegExp("^[no]|^[yes]$")
         validator_4 = QRegExpValidator(regex_4)
         self.tank_fill_field.setValidator(validator_4)
         self.tank_fill_combo_box = QComboBox()
@@ -2313,8 +1949,6 @@ class Tracker(QWidget):
         self.comments_field.setMaximumWidth(220)
 
         widgets = [
-            self.resin_tank_label,
-            self.resin_tank_combo_box,
             self.tank_id_label,
             self.tank_id_combo_box,
             self.volume_used_label,
@@ -2351,7 +1985,7 @@ class Tracker(QWidget):
                     self.preliminary_vbox.removeWidget(
                         self.preliminary_vbox.itemAtPosition(1, 1).widget()
                     )
-                self.preliminary_vbox.addWidget(QLabel(f"{printer}"), 1, 1)
+                self.preliminary_vbox.addWidget(QLabel(printer.replace("_", " ")), 1, 1)
                 button.setStyleSheet(
                     """QCheckBox::indicator {
                                 image: url(assets/Printers/"""

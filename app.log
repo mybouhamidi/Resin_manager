@@ -3777,3 +3777,265 @@
 2022-10-06 13:56:31,642 app.py INFO:Updating resins selection
 2022-10-06 13:56:31,645 app.py INFO:Updating resins selection
 2022-10-06 13:56:37,008 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 13:58:00,313 app.py INFO:New instanciation!
+2022-10-06 13:58:00,673 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 13:58:01,210 app.py INFO:UI rendered
+2022-10-06 13:58:08,178 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 13:59:25,994 app.py INFO:New instanciation!
+2022-10-06 13:59:26,435 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 13:59:26,938 app.py INFO:UI rendered
+2022-10-06 13:59:45,778 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 13:59:49,276 app.py INFO:New instanciation!
+2022-10-06 13:59:49,632 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 13:59:50,133 app.py INFO:UI rendered
+2022-10-06 13:59:53,851 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 14:00:03,316 app.py INFO:New instanciation!
+2022-10-06 14:00:03,670 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 14:00:04,192 app.py INFO:UI rendered
+2022-10-06 14:00:08,134 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 14:00:18,715 app.py INFO:New instanciation!
+2022-10-06 14:00:19,067 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 14:00:19,575 app.py INFO:UI rendered
+2022-10-06 14:00:23,712 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 14:00:41,396 app.py INFO:New instanciation!
+2022-10-06 14:00:41,761 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 14:00:42,269 app.py INFO:UI rendered
+2022-10-06 14:00:45,631 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 14:00:55,065 app.py INFO:New instanciation!
+2022-10-06 14:00:55,466 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 14:00:56,006 app.py INFO:UI rendered
+2022-10-06 14:00:59,809 app.py INFO:Updating resins selection
+2022-10-06 14:01:06,976 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 14:01:18,332 app.py INFO:New instanciation!
+2022-10-06 14:01:18,717 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 14:01:19,490 app.py INFO:UI rendered
+2022-10-06 14:01:20,940 app.py INFO:Updating resins selection
+2022-10-06 14:01:27,872 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 14:01:42,479 app.py INFO:New instanciation!
+2022-10-06 14:01:42,997 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 14:01:43,716 app.py INFO:UI rendered
+2022-10-06 14:01:45,213 app.py INFO:Updating resins selection
+2022-10-06 14:02:11,451 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 14:16:48,889 app.py INFO:New instanciation!
+2022-10-06 14:16:49,384 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 14:17:16,103 app.py INFO:New instanciation!
+2022-10-06 14:17:16,574 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 14:19:09,416 app.py INFO:New instanciation!
+2022-10-06 14:19:10,449 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 14:20:38,898 app.py INFO:New instanciation!
+2022-10-06 14:20:39,818 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 14:20:40,654 app.py INFO:UI rendered
+2022-10-06 14:20:47,421 app.py INFO:Updating resins selection
+2022-10-06 14:24:16,305 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 14:24:19,518 app.py INFO:New instanciation!
+2022-10-06 14:24:44,224 app.py INFO:New instanciation!
+2022-10-06 14:24:44,619 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 14:24:45,188 app.py INFO:UI rendered
+2022-10-06 14:24:46,749 app.py INFO:Updating resins selection
+2022-10-06 14:24:48,705 app.py INFO:Trying to add new printer
+2022-10-06 14:24:52,352 app.py INFO:Updating resins selection
+2022-10-06 14:24:52,364 app.py INFO:Updating resins selection
+2022-10-06 14:24:54,025 app.py INFO:Trying to add new printer
+2022-10-06 14:25:02,941 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 14:47:52,246 app.py INFO:New instanciation!
+2022-10-06 14:47:52,625 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 14:47:53,147 app.py INFO:UI rendered
+2022-10-06 14:47:54,115 app.py INFO:Updating resins selection
+2022-10-06 14:47:58,973 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 14:50:05,991 app.py INFO:New instanciation!
+2022-10-06 14:50:06,415 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 14:50:07,011 app.py INFO:UI rendered
+2022-10-06 14:50:08,020 app.py INFO:Updating resins selection
+2022-10-06 14:50:09,609 app.py INFO:Updating resins selection
+2022-10-06 14:50:09,616 app.py INFO:Updating resins selection
+2022-10-06 14:50:10,929 app.py INFO:Updating resins selection
+2022-10-06 14:50:10,937 app.py INFO:Updating resins selection
+2022-10-06 14:50:11,680 app.py INFO:Updating resins selection
+2022-10-06 14:50:11,686 app.py INFO:Updating resins selection
+2022-10-06 14:50:12,363 app.py INFO:Updating resins selection
+2022-10-06 14:50:12,369 app.py INFO:Updating resins selection
+2022-10-06 14:50:15,556 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 14:51:10,256 app.py INFO:New instanciation!
+2022-10-06 14:51:10,687 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 14:51:11,315 app.py INFO:UI rendered
+2022-10-06 14:51:12,536 app.py INFO:Updating resins selection
+2022-10-06 14:51:16,813 app.py INFO:Updating resins selection
+2022-10-06 14:51:16,822 app.py INFO:Updating resins selection
+2022-10-06 14:51:22,012 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 14:52:07,315 app.py INFO:New instanciation!
+2022-10-06 14:52:07,720 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 14:52:08,219 app.py INFO:UI rendered
+2022-10-06 14:52:09,200 app.py INFO:Updating resins selection
+2022-10-06 14:52:26,117 app.py INFO:Updating resins selection
+2022-10-06 14:52:26,127 app.py INFO:Updating resins selection
+2022-10-06 14:53:53,384 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 14:53:55,666 app.py INFO:New instanciation!
+2022-10-06 14:53:56,056 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 14:53:56,628 app.py INFO:UI rendered
+2022-10-06 14:53:57,706 app.py INFO:Updating resins selection
+2022-10-06 14:53:59,070 app.py INFO:Updating resins selection
+2022-10-06 14:53:59,080 app.py INFO:Updating resins selection
+2022-10-06 14:54:02,813 app.py INFO:Updating resins selection
+2022-10-06 14:54:02,820 app.py INFO:Updating resins selection
+2022-10-06 14:54:10,464 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 14:56:36,175 app.py INFO:New instanciation!
+2022-10-06 14:56:36,574 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 14:56:37,147 app.py INFO:UI rendered
+2022-10-06 14:56:38,235 app.py INFO:Updating resins selection
+2022-10-06 14:56:39,866 app.py INFO:Updating resins selection
+2022-10-06 14:56:39,874 app.py INFO:Updating resins selection
+2022-10-06 14:56:41,297 app.py INFO:Updating resins selection
+2022-10-06 14:56:41,308 app.py INFO:Updating resins selection
+2022-10-06 14:56:45,023 app.py INFO:Updating resins selection
+2022-10-06 14:56:45,029 app.py INFO:Updating resins selection
+2022-10-06 14:56:56,151 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 14:58:38,264 app.py INFO:New instanciation!
+2022-10-06 14:58:38,793 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 14:58:39,444 app.py INFO:UI rendered
+2022-10-06 14:58:41,970 app.py INFO:Updating resins selection
+2022-10-06 14:58:43,155 app.py INFO:Updating resins selection
+2022-10-06 14:58:43,164 app.py INFO:Updating resins selection
+2022-10-06 14:58:44,649 app.py INFO:Updating resins selection
+2022-10-06 14:58:44,655 app.py INFO:Updating resins selection
+2022-10-06 14:58:56,583 app.py INFO:Trying to add new printer
+2022-10-06 14:58:59,234 app.py INFO:Trying to add new resin
+2022-10-06 14:59:01,777 app.py INFO:Trying to add new tank
+2022-10-06 14:59:31,971 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 15:02:47,567 app.py INFO:New instanciation!
+2022-10-06 15:02:48,009 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 15:02:48,589 app.py INFO:UI rendered
+2022-10-06 15:02:52,756 app.py INFO:Updating resins selection
+2022-10-06 15:02:55,592 app.py INFO:Updating resins selection
+2022-10-06 15:03:42,083 app.py INFO:New instanciation!
+2022-10-06 15:03:42,549 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 15:03:43,182 app.py INFO:UI rendered
+2022-10-06 15:03:45,653 app.py INFO:Updating resins selection
+2022-10-06 15:03:49,677 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 15:04:20,175 app.py INFO:New instanciation!
+2022-10-06 15:04:20,553 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 15:04:21,107 app.py INFO:Updating resins selection
+2022-10-06 15:04:21,286 app.py INFO:UI rendered
+2022-10-06 15:04:29,171 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 15:05:37,085 app.py INFO:New instanciation!
+2022-10-06 15:05:37,525 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 15:05:38,069 app.py INFO:Updating resins selection
+2022-10-06 15:05:38,201 app.py INFO:UI rendered
+2022-10-06 15:05:59,726 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 15:06:39,341 app.py INFO:New instanciation!
+2022-10-06 15:06:39,736 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 15:06:40,326 app.py INFO:Updating resins selection
+2022-10-06 15:06:40,461 app.py INFO:UI rendered
+2022-10-06 15:06:47,983 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 15:08:51,329 app.py INFO:New instanciation!
+2022-10-06 15:08:51,801 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 15:08:52,391 app.py INFO:Updating resins selection
+2022-10-06 15:08:52,572 app.py INFO:UI rendered
+2022-10-06 15:08:55,872 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 15:10:10,324 app.py INFO:New instanciation!
+2022-10-06 15:10:10,714 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 15:10:11,262 app.py INFO:Updating resins selection
+2022-10-06 15:10:11,437 app.py INFO:UI rendered
+2022-10-06 15:10:15,094 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 15:10:42,689 app.py INFO:New instanciation!
+2022-10-06 15:10:43,101 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 15:10:43,716 app.py INFO:Updating resins selection
+2022-10-06 15:10:43,888 app.py INFO:UI rendered
+2022-10-06 15:10:46,930 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 15:11:28,362 app.py INFO:New instanciation!
+2022-10-06 15:11:28,781 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 15:11:29,347 app.py INFO:Updating resins selection
+2022-10-06 15:11:29,535 app.py INFO:UI rendered
+2022-10-06 15:12:06,113 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 15:12:40,776 app.py INFO:New instanciation!
+2022-10-06 15:12:41,231 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 15:12:41,788 app.py INFO:Updating resins selection
+2022-10-06 15:12:41,922 app.py INFO:UI rendered
+2022-10-06 15:12:53,369 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 15:15:59,264 app.py INFO:New instanciation!
+2022-10-06 15:15:59,675 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 15:16:00,241 app.py INFO:Updating resins selection
+2022-10-06 15:16:00,370 app.py INFO:UI rendered
+2022-10-06 15:16:24,051 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 15:18:14,470 app.py INFO:New instanciation!
+2022-10-06 15:18:14,948 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 15:18:15,500 app.py INFO:Updating resins selection
+2022-10-06 15:18:15,503 app.py ERROR:'Volume used in ml'
+2022-10-06 15:18:15,669 app.py INFO:UI rendered
+2022-10-06 15:18:19,055 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 15:18:24,317 app.py INFO:New instanciation!
+2022-10-06 15:18:24,832 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 15:18:25,426 app.py INFO:Updating resins selection
+2022-10-06 15:18:25,428 app.py ERROR:'Volume used in ml'
+2022-10-06 15:18:25,626 app.py INFO:UI rendered
+2022-10-06 15:18:29,112 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 15:18:41,299 app.py INFO:New instanciation!
+2022-10-06 15:18:41,736 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 15:18:42,324 app.py INFO:Updating resins selection
+2022-10-06 15:18:42,326 app.py ERROR:'Volume used (ml)'
+2022-10-06 15:18:42,490 app.py INFO:UI rendered
+2022-10-06 15:18:47,808 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 15:20:01,655 app.py INFO:New instanciation!
+2022-10-06 15:20:02,089 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 15:20:02,667 app.py INFO:Updating resins selection
+2022-10-06 15:20:02,669 app.py ERROR:setText(self, str): argument 1 has unexpected type 'numpy.float64'
+2022-10-06 15:20:02,839 app.py INFO:UI rendered
+2022-10-06 15:20:06,632 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 15:20:24,914 app.py INFO:New instanciation!
+2022-10-06 15:20:25,300 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 15:20:25,858 app.py INFO:Updating resins selection
+2022-10-06 15:20:26,009 app.py INFO:UI rendered
+2022-10-06 15:36:04,722 app.py INFO:Updating resins selection
+2022-10-06 15:36:04,726 app.py INFO:Updating resins selection
+2022-10-06 15:36:19,075 app.py INFO:Tank or Resin not defined
+2022-10-06 15:37:03,805 app.py INFO:New instanciation!
+2022-10-06 15:37:04,738 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 15:37:05,602 app.py INFO:Updating resins selection
+2022-10-06 15:37:05,769 app.py INFO:UI rendered
+2022-10-06 15:37:07,454 app.py INFO:Updating resins selection
+2022-10-06 15:37:07,458 app.py INFO:Updating resins selection
+2022-10-06 15:38:57,167 app.py INFO:New instanciation!
+2022-10-06 15:38:57,566 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 15:38:58,175 app.py INFO:Updating resins selection
+2022-10-06 15:38:58,302 app.py INFO:UI rendered
+2022-10-06 15:38:59,924 app.py INFO:Updating resins selection
+2022-10-06 15:38:59,929 app.py INFO:Updating resins selection
+2022-10-06 15:39:06,877 app.py INFO:New print entered, updating prints/Tanks/Resins/Labelling tables
+2022-10-06 15:39:29,162 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 15:40:54,051 app.py INFO:New instanciation!
+2022-10-06 15:40:56,198 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 15:40:57,598 app.py INFO:Updating resins selection
+2022-10-06 15:40:57,807 app.py INFO:UI rendered
+2022-10-06 15:41:06,861 app.py INFO:New print entered, updating prints/Tanks/Resins/Labelling tables
+2022-10-06 15:41:16,091 app.py INFO:New print entered, updating prints/Tanks/Resins/Labelling tables
+2022-10-06 15:41:16,972 app.py INFO:New print entered, updating prints/Tanks/Resins/Labelling tables
+2022-10-06 15:41:17,954 app.py INFO:New print entered, updating prints/Tanks/Resins/Labelling tables
+2022-10-06 15:41:18,847 app.py INFO:New print entered, updating prints/Tanks/Resins/Labelling tables
+2022-10-06 15:41:19,732 app.py INFO:New print entered, updating prints/Tanks/Resins/Labelling tables
+2022-10-06 15:46:36,503 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 15:46:38,839 app.py INFO:New instanciation!
+2022-10-06 15:46:39,731 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 15:46:40,649 app.py INFO:Updating resins selection
+2022-10-06 15:47:13,094 app.py INFO:New instanciation!
+2022-10-06 15:47:13,556 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 15:47:14,186 app.py INFO:Updating resins selection
+2022-10-06 15:47:14,315 app.py INFO:UI rendered
+2022-10-06 15:47:27,186 app.py INFO:Updating resins selection
+2022-10-06 15:47:27,190 app.py INFO:Updating resins selection
+2022-10-06 15:47:28,538 app.py INFO:Updating resins selection
+2022-10-06 15:47:28,542 app.py INFO:Updating resins selection
+2022-10-06 15:47:34,532 app.py INFO:Updating resins selection
+2022-10-06 15:47:34,536 app.py INFO:Updating resins selection
+2022-10-06 15:47:35,391 app.py INFO:Updating resins selection
+2022-10-06 15:47:35,396 app.py INFO:Updating resins selection
+2022-10-06 15:47:36,321 app.py INFO:Updating resins selection
+2022-10-06 15:47:36,325 app.py INFO:Updating resins selection
+2022-10-06 15:47:37,570 app.py INFO:Updating resins selection
+2022-10-06 15:47:37,575 app.py INFO:Updating resins selection
+2022-10-06 15:47:39,100 app.py INFO:Updating resins selection
+2022-10-06 15:47:39,105 app.py INFO:Updating resins selection
+2022-10-06 15:47:45,705 app.py INFO:The program is closed normally, saving the current data
+2022-10-06 15:50:45,735 app.py INFO:New instanciation!
+2022-10-06 15:50:46,670 app.py INFO:No data found, uploading data from excel sheet
+2022-10-06 15:50:47,577 app.py INFO:Updating resins selection
+2022-10-06 15:50:47,714 app.py INFO:UI rendered
+2022-10-06 15:51:08,796 app.py INFO:The program is closed normally, saving the current data
