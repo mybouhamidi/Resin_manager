@@ -4,24 +4,36 @@ from PyQt5.QtWidgets import (
     QLabel,
     QLineEdit,
     QPushButton,
-    QHBoxLayout,
     QVBoxLayout,
     QGridLayout,
     QComboBox,
 )
 from datetime import datetime
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QRegExpValidator
+from PyQt5.QtCore import QRegExp
 
+regex = QRegExp(
+            "^([0-9][0-9]|19[0-9][0-9]|20[0-9][0-9])(\/|/)([1-9]|0[1-9]|1[0-2])(\:|/)([1-9]|0[1-9]|1[0-9]|2[0-9]|3[0-1])$"
+        )
+validator = QRegExpValidator(regex)
+
+regex_1 = QRegExp("[0-9]+")
+validator_1 = QRegExpValidator(regex_1)
+
+regex_2 = QRegExp("[0-999]+")
+validator_2 = QRegExpValidator(regex_2)
+
+regex_3 = QRegExp("[0-9999]+")
+validator_3 = QRegExpValidator(regex_3)
 
 class Printer_addition(QMainWindow):
     def __init__(self):
         super().__init__()
-        # self.parent = main
 
     def input(self):
         self.setWindowTitle("Addition of new printer")
         main_layout = QWidget()
-        # tab = QWidget()
+    
         vbox = QVBoxLayout()
         self.printer_name = QLabel("Printer's name:")
         self.printer_field = QLineEdit()
@@ -45,7 +57,6 @@ class Printer_addition(QMainWindow):
         vbox.addWidget(printers_add)
         main_layout.setLayout(vbox)
 
-        # main_layout.addTab(tab, "test")
         self.setCentralWidget(main_layout)
         self.setFixedSize(600, 350)
         self.move(600, 350)
@@ -63,7 +74,7 @@ class Consummables_addition(QMainWindow):
 
         self.cartridge_id_resins_label = QLabel("Cartridge ID:")
         self.cartridge_id_resins_field = QLineEdit()
-        # self.cartridge_id_resins_field.setValidator(validator_2)
+        self.cartridge_id_resins_field.setValidator(validator_2)
         self.cartridge_id_resins_combo_box = QComboBox()
         self.cartridge_id_resins_combo_box.addItems(
             list(
@@ -106,7 +117,7 @@ class Consummables_addition(QMainWindow):
         )
         self.version_resins_combo_box.setCurrentIndex(-1)
         self.version_resins_field = QLineEdit()
-        # self.version_resins_field.setValidator(validator_1)
+        self.version_resins_field.setValidator(validator_1)
         self.version_resins_combo_box.setLineEdit(self.version_resins_field)
         self.version_resins_label.setBuddy(self.version_resins_combo_box)
         self.version_resins_combo_box.currentTextChanged.connect(
@@ -118,7 +129,7 @@ class Consummables_addition(QMainWindow):
         self.batch_date_resins_label = QLabel("Batch date (YYYY/MM/DD):")
         self.batch_date_resins_field = QLineEdit()
         self.batch_date_resins_field.setText(datetime.now().strftime("%Y/%m/%d"))
-        # self.batch_date_resins_field.setValidator(validator)
+        self.batch_date_resins_field.setValidator(validator)
         self.batch_date_resins_field.textChanged.connect(
             lambda x: self.batch_date_resins_field.setStyleSheet(
                 "border: 0.5px solid black"
@@ -186,7 +197,7 @@ class Tank_addition(QMainWindow):
         )
         self.tanks_id_combo_box.setCurrentIndex(-1)
         self.tanks_id_field = QLineEdit()
-        # self.tanks_id_field.setValidator(validator_2)
+        self.tanks_id_field.setValidator(validator_2)
         self.tanks_id_label.setBuddy(self.tanks_id_combo_box)
         self.tanks_id_combo_box.setLineEdit(self.tanks_id_field)
         self.tanks_id_field.setMaximumWidth(220)
@@ -220,7 +231,7 @@ class Tank_addition(QMainWindow):
         )
         self.version_tanks_combo_box.setCurrentIndex(-1)
         self.version_tanks_field = QLineEdit()
-        # self.version_tanks_field.setValidator(validator_1)
+        self.version_tanks_field.setValidator(validator_1)
         self.version_tanks_combo_box.setLineEdit(self.version_tanks_field)
         self.version_tanks_label.setBuddy(self.version_tanks_combo_box)
         self.version_tanks_field.setMaximumWidth(220)
@@ -228,7 +239,7 @@ class Tank_addition(QMainWindow):
         self.tanks_total_volume_label = QLabel("Total print volume (mL):")
         self.tanks_total_volume_field = QLineEdit()
         self.tanks_total_volume_field.setMaximumWidth(220)
-        # self.tanks_total_volume_field.setValidator(validator_3)
+        self.tanks_total_volume_field.setValidator(validator_3)
 
         self.tanks_status_label = QLabel("Status:")
         self.tanks_status_field = QLineEdit()
@@ -251,7 +262,7 @@ class Tank_addition(QMainWindow):
         self.tanks_opened_date_label = QLabel("Opened date:")
         self.tanks_opened_date_field = QLineEdit()
         self.tanks_opened_date_field.setText(datetime.now().strftime("%Y/%m/%d"))
-        # self.tanks_opened_date_field.setValidator(validator)
+        self.tanks_opened_date_field.setValidator(validator)
         self.tanks_opened_date_field.setMaximumWidth(220)
 
         self.tanks_comments_label = QLabel("Comments:")

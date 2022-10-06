@@ -48,11 +48,6 @@ from structs import (
 # # TO DO:
 # Label printers with serial number
 
-# Separate tables for maintenance by printer
-# Dictionary ui for dynamic modification
-
-# Resin version as drop-down
-# Scrolling on main ui
 # Remove
 
 logging.basicConfig(
@@ -181,22 +176,22 @@ class Tracker(QWidget):
             lambda x: self.resin_combo_box.setStyleSheet("border: 0.5px solid black")
         )
 
-        self.version_label = QLabel("Resin version:")
-        self.version_combo_box = QComboBox()
-        self.version_combo_box.addItems(
-            list(map(lambda x: str(x), set(self.data["prints"]["Version"])))
-        )
-        self.version_field = QLineEdit()
-        regex_1 = QRegExp("[0-9]+")
-        validator_1 = QRegExpValidator(regex_1)
-        self.version_field.setValidator(validator_1)
-        self.version_combo_box.setLineEdit(self.version_field)
-        self.version_label.setBuddy(self.version_combo_box)
-        self.version_combo_box.setCurrentIndex(-1)
-        self.version_combo_box.currentTextChanged.connect(
-            lambda x: self.version_combo_box.setStyleSheet("border: 0.5px solid black")
-        )
-        self.version_field.setMaximumWidth(220)
+        # self.version_label = QLabel("Resin version:")
+        # self.version_combo_box = QComboBox()
+        # self.version_combo_box.addItems(
+        #     list(map(lambda x: str(x), set(self.data["prints"]["Version"])))
+        # )
+        # self.version_field = QLineEdit()
+        # regex_1 = QRegExp("[0-9]+")
+        # validator_1 = QRegExpValidator(regex_1)
+        # self.version_field.setValidator(validator_1)
+        # self.version_combo_box.setLineEdit(self.version_field)
+        # self.version_label.setBuddy(self.version_combo_box)
+        # self.version_combo_box.setCurrentIndex(-1)
+        # self.version_combo_box.currentTextChanged.connect(
+        #     lambda x: self.version_combo_box.setStyleSheet("border: 0.5px solid black")
+        # )
+        # self.version_field.setMaximumWidth(220)
 
         self.cartridge_id_label = QLabel("Cartridge ID:")
         self.cartridge_id_field = QLineEdit()
@@ -722,15 +717,17 @@ class Tracker(QWidget):
         printer = self.printer_button_group.button(
             self.printer_button_group.checkedId()
         ).toolTip()
+        if self.preliminary_vbox.itemAtPosition(2, 1) is not None and self.preliminary_vbox.itemAtPosition(2, 2) is not None:
+            self.preliminary_vbox.removeWidget(
+                self.preliminary_vbox.itemAtPosition(2, 1).widget()
+            )
+            self.preliminary_vbox.removeWidget(
+                self.preliminary_vbox.itemAtPosition(2, 2).widget()
+            )
+            # self.preliminary_vbox.itemAtPosition(2, 1).layout().deleteLater()
+
         for button in self.cartridge_button_group.buttons():
             if button.isChecked():
-                if self.preliminary_vbox.itemAtPosition(2, 1) is not None:
-                    self.preliminary_vbox.removeWidget(
-                        self.preliminary_vbox.itemAtPosition(2, 1).widget()
-                    )
-                self.preliminary_vbox.addWidget(
-                    QLabel(button.toolTip().replace("_", " ")), 2, 1
-                )
                 button.setStyleSheet(
                     """QCheckBox::indicator {
                                 image: url(assets/Resins/"""
@@ -745,8 +742,6 @@ class Tracker(QWidget):
                 widgets = [
                     self.print_date,
                     self.print_date_field,
-                    self.version_label,
-                    self.version_combo_box,
                     self.cartridge_id_label,
                     self.cartridge_id_combo_box,
                 ]
@@ -762,7 +757,7 @@ class Tracker(QWidget):
                         counter += 1
                         col = True
 
-                self.version_combo_box.clear(),
+                self.version_combo_box.clear()
                 self.version_combo_box.addItems(
                     list(
                         map(
@@ -775,8 +770,9 @@ class Tracker(QWidget):
                             ),
                         )
                     )
-                ),
-                self.cartridge_id_combo_box.clear(),
+                )
+                self.version_combo_box.setMinimumWidth(60)
+                self.cartridge_id_combo_box.clear()
                 self.cartridge_id_combo_box.addItems(
                     list(
                         map(
@@ -790,6 +786,10 @@ class Tracker(QWidget):
                         )
                     )
                 )
+                self.preliminary_vbox.addWidget(
+                    QLabel(button.toolTip().replace("_", " ")), 2, 1
+                )
+                self.preliminary_vbox.addWidget(self.version_combo_box, 2, 2)
 
             else:
                 button.setStyleSheet(
@@ -856,11 +856,29 @@ class Tracker(QWidget):
             self.printer_button_group.checkedId()
         ).toolTip()
 
+        # self.version_label = QLabel("Resin version:")
+        self.version_combo_box = QComboBox()
+        self.version_combo_box.addItems(
+            list(map(lambda x: str(x), set(self.data["prints"]["Version"])))
+        )
+        self.version_field = QLineEdit()
+        regex_1 = QRegExp("[0-9]+")
+        validator_1 = QRegExpValidator(regex_1)
+        self.version_field.setValidator(validator_1)
+        self.version_combo_box.setLineEdit(self.version_field)
+        # self.version_label.setBuddy(self.version_combo_box)
+        self.version_combo_box.setCurrentIndex(-1)
+        self.version_combo_box.currentTextChanged.connect(
+            lambda x: self.version_combo_box.setStyleSheet("border: 0.5px solid black")
+        )
+        # self.version_field.setMaximumWidth(220)
+
         counter = 0
         current_dir = os.getcwd()
         dir_items = os.listdir(current_dir + "/assets/Resins/" + printer + "/")
 
         for item in dir_items:
+            # hbox = QHBoxLayout()
             label = QLabel(item[:-4].replace("_", " "))
             _ = QCheckBox()
             _.setStyleSheet(
@@ -878,6 +896,9 @@ class Tracker(QWidget):
             _.setToolTip(item[:-4])
             self.cartridge_button_group.addButton(_)
 
+            # hbox.addWidget(label)
+            # hbox.addWidget(self.version_combo_box)
+            # self.cartridge_grid.addLayout(hbox, 1, counter)
             self.cartridge_grid.addWidget(label, 1, counter)
             self.cartridge_grid.addWidget(_, 0, counter)
             counter += 1
@@ -904,23 +925,6 @@ class Tracker(QWidget):
         )
         self.print_date_field.setMaximumWidth(220)
 
-        self.version_label = QLabel("Resin version:")
-        self.version_combo_box = QComboBox()
-        self.version_combo_box.addItems(
-            list(map(lambda x: str(x), set(self.data["prints"]["Version"])))
-        )
-        self.version_field = QLineEdit()
-        regex_1 = QRegExp("[0-9]+")
-        validator_1 = QRegExpValidator(regex_1)
-        self.version_field.setValidator(validator_1)
-        self.version_combo_box.setLineEdit(self.version_field)
-        self.version_label.setBuddy(self.version_combo_box)
-        self.version_combo_box.setCurrentIndex(-1)
-        self.version_combo_box.currentTextChanged.connect(
-            lambda x: self.version_combo_box.setStyleSheet("border: 0.5px solid black")
-        )
-        self.version_field.setMaximumWidth(220)
-
         self.cartridge_id_label = QLabel("Cartridge ID:")
         self.cartridge_id_field = QLineEdit()
         regex_2 = QRegExp("[0-999]+")
@@ -943,8 +947,8 @@ class Tracker(QWidget):
         widgets = [
             self.print_date,
             self.print_date_field,
-            self.version_label,
-            self.version_combo_box,
+            # self.version_label,
+            # self.version_combo_box,
             self.cartridge_id_label,
             self.cartridge_id_combo_box,
         ]
