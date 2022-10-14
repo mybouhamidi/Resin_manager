@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import shutil
 from PyQt5.QtCore import QRegExp, QSettings, Qt, QSize
 from PyQt5.QtWidgets import (
@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (
     QTableWidgetItem,
     QCheckBox,
     QFormLayout,
+    QLayout,
     QLineEdit,
     QLabel,
     QButtonGroup,
@@ -45,11 +46,6 @@ from structs import (
     Tank_addition,
 )
 
-# # TO DO:
-# Label printers with serial number
-
-# Remove
-
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s %(name)s %(levelname)s:%(message)s",
@@ -63,7 +59,7 @@ class Tracker(QWidget):
     def __init__(self) -> None:
         super().__init__()
 
-        self.settings = QSettings("app", "app")
+        self.settings = QSettings("config.ini", QSettings.IniFormat)
         self.load_config()
         self.render_ui()
 
@@ -115,6 +111,7 @@ class Tracker(QWidget):
         self.preliminary_vbox.addWidget(QLabel("The printer selected is:"), 1, 0)
         self.preliminary_vbox.addWidget(QLabel("The resin selected is:"), 2, 0)
         self.preliminary_vbox.addWidget(QLabel("The tank selected is:"), 3, 0)
+        self.preliminary_vbox.addWidget(QLabel("Validate print:"), 4, 0)
 
         self.ui_vbox.addLayout(self.preliminary_vbox)
         self.ui_vertical = QFormLayout()
@@ -138,7 +135,7 @@ class Tracker(QWidget):
         self.delete_prints.setToolTip("Delete print from table")
         self.delete_prints.pressed.connect(self.delete_print)
         self.confirm_prints.pressed.connect(self.validate_prints)
-        self.preliminary_vbox.addWidget(self.confirm_prints, 4, 0, 1, 1)
+        self.preliminary_vbox.addWidget(self.confirm_prints, 4, 1)
         vertical_prints = QVBoxLayout()
         horizontal_prints = QHBoxLayout()
         grid_prints = QGridLayout()
@@ -175,23 +172,6 @@ class Tracker(QWidget):
         self.resin_combo_box.currentTextChanged.connect(
             lambda x: self.resin_combo_box.setStyleSheet("border: 0.5px solid black")
         )
-
-        # self.version_label = QLabel("Resin version:")
-        # self.version_combo_box = QComboBox()
-        # self.version_combo_box.addItems(
-        #     list(map(lambda x: str(x), set(self.data["prints"]["Version"])))
-        # )
-        # self.version_field = QLineEdit()
-        # regex_1 = QRegExp("[0-9]+")
-        # validator_1 = QRegExpValidator(regex_1)
-        # self.version_field.setValidator(validator_1)
-        # self.version_combo_box.setLineEdit(self.version_field)
-        # self.version_label.setBuddy(self.version_combo_box)
-        # self.version_combo_box.setCurrentIndex(-1)
-        # self.version_combo_box.currentTextChanged.connect(
-        #     lambda x: self.version_combo_box.setStyleSheet("border: 0.5px solid black")
-        # )
-        # self.version_field.setMaximumWidth(220)
 
         self.cartridge_id_label = QLabel("Cartridge ID:")
         self.cartridge_id_field = QLineEdit()
@@ -277,7 +257,7 @@ class Tracker(QWidget):
         font = QFont()
         font.setPointSize(8)
         self.prints_table.setFont(font)
-        self.prints_table.setRowCount(self.data["prints"].shape[0])
+        self.prints_table.setRowCount(self.data["prints"].shape[0] + 1)
         self.prints_table.setColumnCount(self.data["prints"].shape[1])
 
         self.prints_table.setHorizontalHeaderLabels(self.data["prints"].columns)
@@ -320,7 +300,7 @@ class Tracker(QWidget):
 
         self.resins_table = QTableWidget()
         self.resins_table.setFont(font)
-        self.resins_table.setRowCount(self.data["resins"].shape[0])
+        self.resins_table.setRowCount(self.data["resins"].shape[0] + 1)
         self.resins_table.setColumnCount(self.data["resins"].shape[1])
         self.resins_table.setHorizontalHeaderLabels(self.data["resins"].columns)
         self.resins_table.horizontalHeader().setDefaultAlignment(
@@ -342,7 +322,7 @@ class Tracker(QWidget):
 
         self.cartridge_table = QTableWidget()
         self.cartridge_table.setFont(font)
-        self.cartridge_table.setRowCount(self.data["cartridges"].shape[0])
+        self.cartridge_table.setRowCount(self.data["cartridges"].shape[0] + 1)
         self.cartridge_table.setColumnCount(self.data["cartridges"].shape[1])
         self.cartridge_table.setHorizontalHeaderLabels(self.data["cartridges"].columns)
         self.cartridge_table.horizontalHeader().setDefaultAlignment(
@@ -384,7 +364,7 @@ class Tracker(QWidget):
 
         self.tanks = QTableWidget()
         self.tanks.setFont(font)
-        self.tanks.setRowCount(self.data["tanks"].shape[0])
+        self.tanks.setRowCount(self.data["tanks"].shape[0] + 1)
         self.tanks.setColumnCount(self.data["tanks"].shape[1])
         self.tanks.setHorizontalHeaderLabels(self.data["tanks"].columns)
         self.tanks.horizontalHeader().setDefaultAlignment(
@@ -417,13 +397,18 @@ class Tracker(QWidget):
 
         # Maintenance tracker
         horizontal_maintenance = QVBoxLayout()
-        grid_maintenance = QGridLayout()
+
+        h_maintenance = QHBoxLayout()
+        h_maintenance_2 = QHBoxLayout()
+        h_maintenance_3 = QHBoxLayout()
+        v_maintenance = QVBoxLayout()
+        h_maintenance_2.setSizeConstraint(QLayout.SetFixedSize)
 
         self.printer_maintenance_label = QLabel(
             "Printer / Consummable:                                                                                                   "
         )
         self.maintenance_printers = QToolButton(self)
-        self.maintenance_printers.setStyleSheet("width: 390%")
+        self.maintenance_printers.setFixedWidth(100)
 
         self.printer_maintenance_combo_box = QMenu()
         self.printers_menu = self.printer_maintenance_combo_box.addMenu("Printers")
@@ -444,6 +429,7 @@ class Tracker(QWidget):
         self.maintenance_printers.triggered.connect(
             lambda x: self.maintenance_printers.setText(x.text())
         )
+        self.maintenance_printers.setMinimumWidth(200)
 
         self.part_maintenance_label = QLabel(
             "Procedure:                                                                                                 "
@@ -460,24 +446,24 @@ class Tracker(QWidget):
         )
         self.date_maintenance_field = QLineEdit()
 
-        grid_maintenance.addWidget(self.printer_maintenance_label, 0, 0)
-        grid_maintenance.addWidget(self.maintenance_printers, 1, 0)
-        grid_maintenance.addWidget(self.part_maintenance_label, 0, 1)
-        grid_maintenance.addWidget(self.part_maintenance_field, 1, 1)
-        grid_maintenance.addWidget(self.date_maintenance_label, 0, 2)
-        grid_maintenance.addWidget(self.date_maintenance_field, 1, 2)
-        grid_maintenance.addWidget(self.frequency_maintenance_label, 0, 3)
-        grid_maintenance.addWidget(self.frequency_maintenance_field, 1, 3)
+        h_maintenance.addWidget(self.printer_maintenance_label)
+        h_maintenance_2.addWidget(self.maintenance_printers)
+        h_maintenance.addWidget(self.part_maintenance_label)
+        h_maintenance_2.addWidget(self.part_maintenance_field)
+        h_maintenance.addWidget(self.date_maintenance_label)
+        h_maintenance_2.addWidget(self.date_maintenance_field)
+        h_maintenance.addWidget(self.frequency_maintenance_label)
+        h_maintenance_2.addWidget(self.frequency_maintenance_field)
         maintenance_add = QPushButton()
         maintenance_add.setIcon(QIcon("assets/plus-solid.svg"))
         maintenance_add.setToolTip("Append maintenance to table")
         maintenance_add.clicked.connect(self.addMaintenance)
-        grid_maintenance.addWidget(maintenance_add, 2, 0)
+        h_maintenance_3.addWidget(maintenance_add)
         maintenance_del = QPushButton()
         maintenance_del.setIcon(QIcon("assets/circle-minus-solid.svg"))
         maintenance_del.setToolTip("Delete maintenance from table")
         maintenance_del.clicked.connect(self.deleteMaintenance)
-        grid_maintenance.addWidget(maintenance_del, 2, 1)
+        h_maintenance_3.addWidget(maintenance_del)
 
         self.maintenance_tab = QTabWidget()
         columns = list(self.data["maintenance"])
@@ -489,24 +475,36 @@ class Tracker(QWidget):
             df = self.data["maintenance"].rename(columns={_: "Date"})
             df = df.drop(columns=[i for i in columns if i != _])
 
+            df["Date"] = pd.to_datetime(df["Date"])
+
+            df["Reminder"] = df.apply(self.testing, axis=1)
+
             self.maintenance[_] = QTableWidget()
             self.maintenance[_].setFont(font)
 
             self.maintenance[_].setRowCount(df.shape[0])
-            self.maintenance[_].setColumnCount(df.shape[1])
+            self.maintenance[_].setColumnCount(df.shape[1] + 1)
 
-            self.maintenance[_].setHorizontalHeaderLabels(df.columns)
+            col = list(df.columns)
+            col.append("Check up")
+            self.maintenance[_].setHorizontalHeaderLabels(col)
             self.maintenance[_].horizontalHeader().setDefaultAlignment(
                 Qt.AlignHCenter | Qt.Alignment(Qt.TextWordWrap)
             )
             for i in range(df.shape[0]):
-                for j in range(df.shape[1]):
-                    self.maintenance[_].setItem(
-                        i, j, QTableWidgetItem(str(df.iloc[i, j]))
-                    )
-                    self.maintenance[_].item(i, j).setTextAlignment(
-                        Qt.AlignHCenter | Qt.Alignment(Qt.TextWordWrap)
-                    )
+                for j in range(df.shape[1] + 1):
+                    if j == df.shape[1]:
+                        self.maintenance[_].setCellWidget(i, j, QCheckBox())
+                        self.maintenance[_].cellWidget(i, j).setStyleSheet(
+                            "margin-left:50%; "
+                        )
+                    else:
+                        self.maintenance[_].setItem(
+                            i, j, QTableWidgetItem(str(df.iloc[i, j]))
+                        )
+                        self.maintenance[_].item(i, j).setTextAlignment(
+                            Qt.AlignHCenter | Qt.Alignment(Qt.TextWordWrap)
+                        )
 
             self.maintenance[_].cellChanged.connect(self.maintenance_edited)
             self.maintenance[_].scrollToBottom()
@@ -514,9 +512,11 @@ class Tracker(QWidget):
 
             self.maintenance_tab.addTab(self.maintenance[_], _)
 
-        horizontal_maintenance.addLayout(grid_maintenance)
+        v_maintenance.addLayout(h_maintenance)
+        v_maintenance.addLayout(h_maintenance_2)
+        v_maintenance.addLayout(h_maintenance_3)
+        horizontal_maintenance.addLayout(v_maintenance)
         horizontal_maintenance.addWidget(self.maintenance_tab)
-        horizontal_maintenance.setSpacing(40)
 
         self.tab_prints.setLayout(horizontal_prints)
         self.tab_resins.setLayout(vertical)
@@ -533,7 +533,18 @@ class Tracker(QWidget):
 
         self.load_last_config()
         self.show()
+        self.adjustSize()
         logger.info("UI rendered")
+
+    def testing(self, value):
+        if value["Frequency"].startswith("qmo"):
+            return value["Date"] + timedelta(days=30)
+
+        elif value["Frequency"].startswith("q3mo"):
+            return value["Date"] + timedelta(days=90)
+
+        elif value["Frequency"].startswith("qweekly"):
+            return value["Date"] + timedelta(days=7)
 
     def load_last_config(self):
         try:
@@ -553,6 +564,7 @@ class Tracker(QWidget):
                 if printer in button.toolTip().replace("_", " "):
                     button.setChecked(True)
                     self.printer_button_group.buttonClicked.emit(button)
+                    self.printer_button_group.buttonPressed.emit(button)
 
             for button in self.cartridge_button_group.buttons():
                 if resin in button.toolTip().replace("_", " "):
@@ -564,9 +576,7 @@ class Tracker(QWidget):
                     button.setChecked(True)
                     self.tank_button_group.buttonClicked.emit(button)
 
-            self.print_date_field.setText(
-                self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :]["Date"]
-            )
+            self.print_date_field.setText(datetime.now().strftime("%Y/%m/%d"))
 
             self.version_combo_box.setCurrentText(
                 str(
@@ -576,6 +586,7 @@ class Tracker(QWidget):
                 )
             )
 
+            # print(self.data["prints"])
             self.volume_used_field.setText(
                 str(
                     self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
@@ -616,9 +627,7 @@ class Tracker(QWidget):
 
             self.comments_field.setText(
                 str(
-                    self.data["prints"].iloc[self.data["prints"].shape[0] - 1, :][
-                        "Comment"
-                    ]
+                    self.data["prints"].iloc[self.data["prints"].shape[0], :]["Comment"]
                 )
             )
 
@@ -627,14 +636,28 @@ class Tracker(QWidget):
             pass
 
     def addMaintenance(self):
+        delta = None
+        part = self.maintenance_printers.text()
+        if self.frequency_maintenance_field.text().startswith("qmo"):
+            delta = 30
+        elif self.frequency_maintenance_field.text().startswith("qweekly"):
+            delta = 7
+        elif self.frequency_maintenance_field.text().startswith("q3mo"):
+            delta = 90
+
         df = pd.DataFrame(
             {
                 "Procedure": [self.part_maintenance_field.text()],
-                self.maintenance_printers.text(): [datetime.now().strftime("%Y/%m/%d")],
+                # self.maintenance_printers.text(): [datetime.now().strftime("%Y/%m/%d")],
                 "Frequency": [self.frequency_maintenance_field.text()],
                 "Date": [self.date_maintenance_field.text()],
+                "Reminder": [
+                    pd.to_datetime(self.date_maintenance_field.text())
+                    + timedelta(days=delta)
+                ],
             }
         )
+
         self.data["maintenance"] = pd.concat(
             [self.data["maintenance"], df], axis=0, ignore_index=True
         )
@@ -644,20 +667,35 @@ class Tracker(QWidget):
             self.data["maintenance"].shape[1], "Frequency", frequency
         )
 
-        self.maintenance.setRowCount(self.data["maintenance"].shape[0])
-        self.maintenance.setColumnCount(self.data["maintenance"].shape[1])
-        self.maintenance.setHorizontalHeaderLabels(self.data["maintenance"].columns)
+        try:
+            self.maintenance[part]
+        except KeyError:
+            self.maintenance[part] = QTableWidget()
+
+        self.maintenance[part].setRowCount(self.data["maintenance"].shape[0])
+        self.maintenance[part].setColumnCount(self.data["maintenance"].shape[1] + 1)
+        self.maintenance[part].setHorizontalHeaderLabels(
+            self.data["maintenance"].columns
+        )
 
         for i in range(self.data["maintenance"].shape[0]):
-            for j in range(self.data["maintenance"].shape[1]):
-                self.maintenance.setItem(
-                    i, j, QTableWidgetItem(str(self.data["maintenance"].iloc[i, j]))
-                )
-                self.maintenance.item(i, j).setTextAlignment(
-                    Qt.AlignHCenter | Qt.Alignment(Qt.TextWordWrap)
-                )
+            for j in range(self.data["maintenance"].shape[1] + 1):
+                if j == df.shape[1]:
+                    self.maintenance[part].setCellWidget(i, j, QCheckBox())
+                    self.maintenance[part].cellWidget(i, j).setStyleSheet(
+                        "margin-left:50%; "
+                    )
+                else:
+                    self.maintenance[part].setItem(
+                        i, j, QTableWidgetItem(str(self.data["maintenance"].iloc[i, j]))
+                    )
+                    self.maintenance[part].item(i, j).setTextAlignment(
+                        Qt.AlignHCenter | Qt.Alignment(Qt.TextWordWrap)
+                    )
 
-        self.maintenance.scrollToBottom()
+        self.maintenance[part].scrollToBottom()
+        self.maintenance[part].setSortingEnabled(True)
+        self.maintenance[part].cellChanged.connect(self.maintenance_edited)
         logger.info("Maintenance added successfully!")
 
     def addPrinter(self):
@@ -688,26 +726,40 @@ class Tracker(QWidget):
             logger.info("Printer added successfully!")
 
     def deleteMaintenance(self):
+        columns = list(self.maintenance.keys())
+
         try:
-            if len(self.maintenance.selectedItems()) == 0:
+            if (
+                len(
+                    self.maintenance[
+                        columns[self.maintenance_tab.currentIndex()]
+                    ].selectedItems()
+                )
+                == 0
+            ):
                 raise IndexError
 
             else:
                 ran_row = [
-                    (_.row(), _.column()) for _ in self.maintenance.selectedItems()
+                    (_.row(), _.column())
+                    for _ in self.maintenance[
+                        columns[self.maintenance_tab.currentIndex()]
+                    ].selectedItems()
                 ][0][0]
 
-            if ran_row == 0:
-                error = QErrorMessage(self)
-                error.showMessage("You can't delete column, try rows instead!")
-            else:
-                self.maintenance.removeRow(self.maintenance.currentRow())
-                self.maintenance.showGrid()
+            # if ran_row == 0:
+            #     error = QErrorMessage(self)
+            #     error.showMessage("You can't delete column, try rows instead!")
+            # else:
+            self.maintenance[columns[self.maintenance_tab.currentIndex()]].removeRow(
+                self.maintenance[
+                    columns[self.maintenance_tab.currentIndex()]
+                ].currentRow()
+            )
+            self.maintenance[columns[self.maintenance_tab.currentIndex()]].showGrid()
 
-                self.data["maintenance"] = self.data["maintenance"].drop(index=ran_row)
-                self.data["maintenance"] = self.data["maintenance"].reset_index(
-                    drop=True
-                )
+            self.data["maintenance"] = self.data["maintenance"].drop(index=ran_row)
+            self.data["maintenance"] = self.data["maintenance"].reset_index(drop=True)
 
             logger.info("Maintenance row delete successfully!")
         except IndexError:
@@ -717,14 +769,16 @@ class Tracker(QWidget):
         printer = self.printer_button_group.button(
             self.printer_button_group.checkedId()
         ).toolTip()
-        if self.preliminary_vbox.itemAtPosition(2, 1) is not None and self.preliminary_vbox.itemAtPosition(2, 2) is not None:
+        if (
+            self.preliminary_vbox.itemAtPosition(2, 1) is not None
+            and self.preliminary_vbox.itemAtPosition(2, 2) is not None
+        ):
             self.preliminary_vbox.removeWidget(
                 self.preliminary_vbox.itemAtPosition(2, 1).widget()
             )
             self.preliminary_vbox.removeWidget(
                 self.preliminary_vbox.itemAtPosition(2, 2).widget()
             )
-            # self.preliminary_vbox.itemAtPosition(2, 1).layout().deleteLater()
 
         for button in self.cartridge_button_group.buttons():
             if button.isChecked():
@@ -856,7 +910,6 @@ class Tracker(QWidget):
             self.printer_button_group.checkedId()
         ).toolTip()
 
-        # self.version_label = QLabel("Resin version:")
         self.version_combo_box = QComboBox()
         self.version_combo_box.addItems(
             list(map(lambda x: str(x), set(self.data["prints"]["Version"])))
@@ -866,7 +919,6 @@ class Tracker(QWidget):
         validator_1 = QRegExpValidator(regex_1)
         self.version_field.setValidator(validator_1)
         self.version_combo_box.setLineEdit(self.version_field)
-        # self.version_label.setBuddy(self.version_combo_box)
         self.version_combo_box.setCurrentIndex(-1)
         self.version_combo_box.currentTextChanged.connect(
             lambda x: self.version_combo_box.setStyleSheet("border: 0.5px solid black")
@@ -878,7 +930,6 @@ class Tracker(QWidget):
         dir_items = os.listdir(current_dir + "/assets/Resins/" + printer + "/")
 
         for item in dir_items:
-            # hbox = QHBoxLayout()
             label = QLabel(item[:-4].replace("_", " "))
             _ = QCheckBox()
             _.setStyleSheet(
@@ -896,9 +947,6 @@ class Tracker(QWidget):
             _.setToolTip(item[:-4])
             self.cartridge_button_group.addButton(_)
 
-            # hbox.addWidget(label)
-            # hbox.addWidget(self.version_combo_box)
-            # self.cartridge_grid.addLayout(hbox, 1, counter)
             self.cartridge_grid.addWidget(label, 1, counter)
             self.cartridge_grid.addWidget(_, 0, counter)
             counter += 1
@@ -971,12 +1019,10 @@ class Tracker(QWidget):
         printer = None
         resin = None
         try:
-            if "Form_2" in self.printer_button_group.checkedButton().toolTip():
-                printer = "Form 2"
-            elif "Form_3" in self.printer_button_group.checkedButton().toolTip():
-                printer = "Form 3"
-            elif "CadWorks" in self.printer_button_group.checkedButton().toolTip():
-                printer = "CadWorks µfluidics"
+            printer = (
+                self.printer_button_group.checkedButton().toolTip().replace("_", "")
+            )
+
         except AttributeError:
             error = QErrorMessage(self)
             valid = False
@@ -984,27 +1030,17 @@ class Tracker(QWidget):
             error.showMessage("Please select a printer")
 
         if valid:
-            if "Clear" in self.cartridge_button_group.checkedButton().toolTip():
-                resin = "Clear"
-            elif "Durable" in self.cartridge_button_group.checkedButton().toolTip():
-                resin = "Durable"
-            elif "Elastic" in self.cartridge_button_group.checkedButton().toolTip():
-                resin = "Elastic"
-            elif "Flexible" in self.cartridge_button_group.checkedButton().toolTip():
-                resin = "Flexible"
-            elif "High Temp" in self.cartridge_button_group.checkedButton().toolTip():
-                resin = "High Temp"
-            elif "Master" in self.cartridge_button_group.checkedButton().toolTip():
-                resin = "Master"
-            elif "Tough" in self.cartridge_button_group.checkedButton().toolTip():
-                resin = "Tough"
+            resin = self.cartridge_button_group.checkedButton().toolTip()
 
-            if self.print_date_field.text() == "":
+            tank = self.tank_button_group.checkedButton().toolTip().replace("_", " ")
+
+            if self.print_date_field.text() == " ":
                 self.print_date_field.setStyleSheet("border: 1px solid red")
                 valid = False
-            if self.version_combo_box.currentText() == "":
+            if self.version_combo_box.currentText() == " ":
                 self.version_combo_box.setStyleSheet("border: 1px solid red")
                 valid = False
+
             if self.cartridge_id_combo_box.currentText() == "":
                 self.cartridge_id_combo_box.setStyleSheet("border: 1px solid red")
                 valid = False
@@ -1019,113 +1055,127 @@ class Tracker(QWidget):
                 valid = False
 
             if self.fail_combo_box.currentText() == "":
-                fail = "NaN"
+                fail = np.NaN
             else:
                 fail = self.fail_combo_box.currentText()
             if self.comments_field.text() == "":
-                comments = "NaN"
+                comments = np.NaN
             else:
                 comments = self.comments_field.text()
 
-            for _ in self.printers:
-                if _.name == printer:
-                    printer = _
-
-            for _ in self.consummables:
-                if (
-                    _.type == "Resin Cartridge"
-                    and _.id == float(self.cartridge_id_combo_box.currentText())
-                    and _.resin_type == resin
-                ):
-                    resin = _
-
-            for _ in self.consummables:
-                if _.type == "Tank" and _.id == float(
-                    self.tank_id_combo_box.currentText()
-                ):
-                    tank = _
-
-            try:
-                resin.type += ""
-            except (UnboundLocalError, AttributeError):
-                valid = False
-                printer, resin, tank = None, None, None
-                error = QErrorMessage(self)
-                error.showMessage("Please make sure that the resin is defined")
-            except TypeError:
-                pass
-
-            try:
-                tank.type += ""
-            except (UnboundLocalError, AttributeError):
-                valid = False
-                printer, resin, tank = None, None, None
-                error = QErrorMessage(self)
-                error.showMessage("Please make sure that the tank is defined")
-            except TypeError:
-                pass
-
             if valid:
-                try:
-                    if not printer.can_consume(resin):
-                        valid = False
-                        error = QErrorMessage(self)
-                        error.showMessage(
-                            "Please select a resin that matches the printer"
-                        )
-                        printer, resin, tank = None, None, None
+                for _ in self.printers:
+                    if _.name.replace(" ", "") == printer:
+                        printer = _
 
-                    if not printer.can_consume(tank):
-                        valid = False
-                        printer, resin, tank = None, None, None
-                        error = QErrorMessage(self)
-                        error.showMessage(
-                            "Please select a tank that matches the printer"
-                        )
-                except AttributeError:
-                    error = QErrorMessage(self)
-                    valid = False
-                    resin = None
-                    error.showMessage(
-                        "The selected combination isn't possible, please double check the items selected"
-                    )
+                for _ in self.consummables:
+                    if (
+                        _.type == "Resin Cartridge"
+                        and _.id == float(self.cartridge_id_combo_box.currentText())
+                        and _.resin_type == resin
+                    ):
+                        resin = _
+
+                for _ in self.consummables:
+                    if (
+                        _.type == "Tank"
+                        and _.id == float(self.tank_id_combo_box.currentText())
+                        and tank in _.resin_tank
+                    ):
+                        tank = _
 
                 try:
-                    prints = Prints(
-                        printer,
-                        resin,
-                        tank,
-                        self.print_date_field.text(),
-                        float(self.volume_used_field.text()),
-                        self.tank_fill_combo_box.currentText(),
-                        fail,
-                        comments,
-                    )
-                    valid = True
-                except AttributeError:
+                    resin.type += ""
+                except (UnboundLocalError, AttributeError):
                     valid = False
                     printer, resin, tank = None, None, None
                     error = QErrorMessage(self)
-                    error.showMessage("Please make sure that the resin/tank is defined")
-                    logger.info("Tank or Resin not defined")
+                    error.showMessage("Please make sure that the resin is defined")
+                except TypeError:
+                    pass
 
-                if not prints.can_consume(resin, tank):
-                    error = QErrorMessage(self)
-                    error.showMessage("Please select a resin that matches the tank")
+                try:
+                    tank.type += ""
+                except (UnboundLocalError, AttributeError):
+                    valid = False
                     printer, resin, tank = None, None, None
-                    logger.info("Conflict between cartridge and tank")
+                    error = QErrorMessage(self)
+                    error.showMessage("Please make sure that the tank is defined")
+                except TypeError:
+                    pass
 
-            if valid:
-                self.prints.append(prints)
-                self.append_to_prints_df(fail, comments, printer, resin, tank)
-                logger.info(
-                    "New print entered, updating prints/Tanks/Resins/Labelling tables"
-                )
+                if valid:
+                    try:
+                        if not printer.can_consume(resin):
+                            valid = False
+                            error = QErrorMessage(self)
+                            error.showMessage(
+                                "Please select a resin that matches the printer"
+                            )
+                            printer, resin, tank = None, None, None
+
+                        if not printer.can_consume(tank):
+                            valid = False
+                            printer, resin, tank = None, None, None
+                            error = QErrorMessage(self)
+                            error.showMessage(
+                                "Please select a tank that matches the printer"
+                            )
+                    except AttributeError:
+                        error = QErrorMessage(self)
+                        valid = False
+                        resin = None
+                        error.showMessage(
+                            "The selected combination isn't possible, please double check the items selected"
+                        )
+
+                    try:
+                        prints = Prints(
+                            printer,
+                            resin,
+                            tank,
+                            pd.to_datetime(self.print_date_field.text()),
+                            float(self.volume_used_field.text()),
+                            self.tank_fill_combo_box.currentText(),
+                            fail,
+                            comments,
+                        )
+                        valid = True
+                        if prints.date == self.prints[-1].date:
+                            valid = False
+                            error = QErrorMessage(self)
+                            error.showMessage("Duplicate are not allowed")
+                            logger.info("Repeats prints are not allowed")
+
+                    except AttributeError:
+                        valid = False
+                        printer, resin, tank = None, None, None
+                        error = QErrorMessage(self)
+                        error.showMessage(
+                            "Please make sure that the resin/tank is defined"
+                        )
+                        logger.info("Tank or Resin not defined")
+
+                    if valid:
+                        if not prints.can_consume(resin, tank):
+                            error = QErrorMessage(self)
+                            error.showMessage(
+                                "Please select a resin that matches the tank"
+                            )
+                            printer, resin, tank = None, None, None
+                            logger.info("Conflict between cartridge and tank")
+
+                if valid:
+                    self.prints.append(prints)
+                    self.append_to_prints_df(fail, comments, printer, resin, tank)
+                    logger.info(
+                        "New print entered, updating prints/Tanks/Resins/Labelling tables"
+                    )
 
     def append_to_prints_df(self, fail, comments, printer, resin, tank):
         df = pd.DataFrame(
             {
-                "Date": [self.print_date_field.text()],
+                "Date": [pd.to_datetime(self.print_date_field.text())],
                 "Printer": [printer.name],
                 "Resin Cartridge": [resin.resin_type],
                 "Version": [resin.version],
@@ -1143,7 +1193,7 @@ class Tracker(QWidget):
                 [self.data["prints"], df], axis=0, ignore_index=True
             )
 
-            self.prints_table.setRowCount(self.data["prints"].shape[0])
+            self.prints_table.setRowCount(self.data["prints"].shape[0] + 1)
             self.prints_table.setColumnCount(self.data["prints"].shape[1])
 
             for i in range(self.data["prints"].shape[0]):
@@ -1189,7 +1239,7 @@ class Tracker(QWidget):
                 "Status",
             ] = "Replaced"
 
-            self.resins_table.setRowCount(self.data["resins"].shape[0])
+            self.resins_table.setRowCount(self.data["resins"].shape[0] + 1)
             self.resins_table.setColumnCount(self.data["resins"].shape[1])
 
             for i in range(self.data["resins"].shape[0]):
@@ -1203,7 +1253,7 @@ class Tracker(QWidget):
 
             self.resins_table.scrollToBottom()
 
-            self.tanks.setRowCount(self.data["tanks"].shape[0])
+            self.tanks.setRowCount(self.data["tanks"].shape[0] + 1)
             self.tanks.setColumnCount(self.data["tanks"].shape[1])
 
             for i in range(self.data["tanks"].shape[0]):
@@ -1225,7 +1275,7 @@ class Tracker(QWidget):
             )
             self.data["prints"] = self.data["prints"].reset_index(drop=True)
 
-            self.prints_table.setRowCount(self.data["prints"].shape[0])
+            self.prints_table.setRowCount(self.data["prints"].shape[0] + 1)
             self.prints_table.setColumnCount(self.data["prints"].shape[1])
 
             for i in range(self.data["prints"].shape[0]):
@@ -1327,14 +1377,12 @@ class Tracker(QWidget):
     def append_to_resins_df(self, comments):
         df = pd.DataFrame(
             {
-                "CartridgeID.1": [
-                    float(self.cartridge_id_resins_combo_box.currentText())
-                ],
-                "Resin Cartridge.1": [self.resin_type_resins_combo_box.currentText()],
-                "Version.1": [self.version_resins_combo_box.currentText()],
+                "CartridgeID.1": [float(self.cartridge_id_combo_box.currentText())],
+                "Resin Cartridge.1": [self.resin_combo_box.currentText()],
+                "Version.1": [self.version_combo_box.currentText()],
                 "Total print volume (mL)": [0.0],
                 "Status": ["Cartridge OK"],
-                "Batch date": [self.batch_date_resins_field.text()],
+                "Batch date": [self.batch_date_field.text()],
                 "Comments": [comments],
             }
         )
@@ -1343,7 +1391,7 @@ class Tracker(QWidget):
             [self.data["resins"], df], axis=0, ignore_index=True
         )
 
-        self.resins_table.setRowCount(self.data["resins"].shape[0])
+        self.resins_table.setRowCount(self.data["resins"].shape[0] + 1)
         self.resins_table.setColumnCount(self.data["resins"].shape[1])
 
         for i in range(self.data["resins"].shape[0]):
@@ -1410,7 +1458,7 @@ class Tracker(QWidget):
             .count()
         )
 
-        self.cartridge_table.setRowCount(self.data["cartridges"].shape[0])
+        self.cartridge_table.setRowCount(self.data["cartridges"].shape[0] + 1)
         self.cartridge_table.setColumnCount(self.data["cartridges"].shape[1])
 
         for i in range(self.data["cartridges"].shape[0]):
@@ -1516,18 +1564,29 @@ class Tracker(QWidget):
 
     def prints_edited(self, i, j):
         self.data["prints"].iloc[i, j] = self.prints_table.item(i, j).text()
+        logger.info("saving changes in the prints table")
 
     def resins_edited(self, i, j):
         self.data["resins"].iloc[i, j] = self.resins_table.item(i, j).text()
+        logger.info("saving changes in the resins table")
 
     def cartridges_edited(self, i, j):
         self.data["cartridges"].iloc[i, j] = self.cartridge_table.item(i, j).text()
+        logger.info("saving changes in the tables table")
 
     def tanks_edited(self, i, j):
         self.data["tanks"].iloc[i, j] = self.tanks.item(i, j).text()
+        logger.info("saving changes in the tanks table")
 
     def maintenance_edited(self, i, j):
-        self.data["maintenance"].iloc[i, j] = self.maintenance.item(i, j).text()
+        columns = list(self.maintenance.keys())
+
+        self.data["maintenance"].iloc[i, j] = (
+            self.maintenance[columns[self.maintenance_tab.currentIndex()]]
+            .item(i, j)
+            .text()
+        )
+        logger.info("saving changes in the maintenance table")
 
     def append_to_tanks_df(self, comments):
         df = pd.DataFrame(
@@ -1600,7 +1659,7 @@ class Tracker(QWidget):
                 + 1
             )
 
-        self.cartridge_table.setRowCount(self.data["cartridges"].shape[0])
+        self.cartridge_table.setRowCount(self.data["cartridges"].shape[0] + 1)
         self.cartridge_table.setColumnCount(self.data["cartridges"].shape[1])
 
         for i in range(self.data["cartridges"].shape[0]):
@@ -1614,7 +1673,7 @@ class Tracker(QWidget):
 
         self.cartridge_table.scrollToBottom()
 
-        self.tanks.setRowCount(self.data["tanks"].shape[0])
+        self.tanks.setRowCount(self.data["tanks"].shape[0] + 1)
         self.tanks.setColumnCount(self.data["tanks"].shape[1])
 
         for i in range(self.data["tanks"].shape[0]):
@@ -1643,8 +1702,7 @@ class Tracker(QWidget):
 
             else:
                 ran_row = [
-                    (_.rowCount(), _.columnCount())
-                    for _ in self.prints_table.selectedItems()
+                    (_.row(), _.column()) for _ in self.prints_table.selectedItems()
                 ][0][0]
 
             if ran_row == 0:
@@ -1668,9 +1726,9 @@ class Tracker(QWidget):
                 raise IndexError
 
             else:
-                ran_row = [
-                    (_.rowCount(), _.columnCount()) for _ in self.tanks.selectedItems()
-                ][0][0]
+                ran_row = [(_.row(), _.column()) for _ in self.tanks.selectedItems()][
+                    0
+                ][0]
 
             if ran_row == 0:
                 error = QErrorMessage(self)
@@ -1693,14 +1751,13 @@ class Tracker(QWidget):
                 raise IndexError
             else:
                 ran_row = [
-                    (_.rowCount(), _.columnCount())
-                    for _ in self.resins_table.selectedItems()
+                    (_.row(), _.column()) for _ in self.resins_table.selectedItems()
                 ][0][0]
 
             if ran_row == 0:
                 logger.info("User is trying to delete a column which is not allowed")
                 error = QErrorMessage(self)
-                error.showMessage("You can't delete column, try rows instead!")
+                error.showMessage("You fcan't delete column, try rows instead!")
             else:
                 self.tanks.removeRow(self.resins_table.currentRow())
                 self.data["resins"] = self.data["resins"].drop(index=ran_row)
@@ -1713,27 +1770,27 @@ class Tracker(QWidget):
             pass
 
     def save_config(self):
-        settings = QSettings("app", "app")
-        settings.clear()
-        settings.setValue("data", self.data)
-        settings.setValue("prints", self.prints)
-        settings.setValue("consummables", self.consummables)
-        settings.setValue("printers", self.printers)
+        # settings = QSettings(os.getcwd() + "/config.ini", QSettings.IniFormat)
+        self.settings.clear()
+        self.settings.setValue("data", self.data)
+        self.settings.setValue("prints", self.prints)
+        self.settings.setValue("consummables", self.consummables)
+        self.settings.setValue("printers", self.printers)
+        self.settings.sync()
 
     def load_config(self):
-        settings = QSettings("app", "app")
-        if settings.contains("data"):
-            self.data = settings.value("data")
-            self.prints = settings.value("prints")
-            self.consummables = settings.value("consummables")
-            self.printers = settings.value("printers")
+        if self.settings.contains("data"):
+            self.data = self.settings.value("data")
+            self.prints = self.settings.value("prints")
+            self.consummables = self.settings.value("consummables")
+            self.printers = self.settings.value("printers")
 
             logger.info("Data found in settings, loading last config")
         else:
             self.printers = [
                 Printer("Form 2", "SLA", "FormLabs"),
                 Printer("Form 3", "SLA", "FormLabs"),
-                Printer("CadWorks µfluidics", "DLP", "CadWorks"),
+                Printer("CadWorks ufluidics", "DLP", "CadWorks"),
             ]
             self.consummables = []
             self.prints = []
@@ -1759,7 +1816,7 @@ class Tracker(QWidget):
                     counter += 1
 
             df_tracking = df1.loc[:, : columns[0]].drop(columns=[columns[0]])
-            df_tracking["Date"] = df_tracking["Date"].dt.strftime("%Y/%m/%d")
+            df_tracking["Date"] = pd.to_datetime(df_tracking["Date"])
             self.data["prints"] = df_tracking
 
             df_cartridge = (
@@ -1770,9 +1827,7 @@ class Tracker(QWidget):
             )
 
             df_cartridge["Batch date"] = pd.to_datetime(df_cartridge["Batch date"])
-            df_cartridge["Batch date"] = df_cartridge["Batch date"].dt.strftime(
-                "%Y/%m/%d"
-            )
+            df_cartridge["Batch date"] = pd.to_datetime(df_cartridge["Batch date"])
             self.data["resins"] = df_cartridge
 
             df_tanks = (
@@ -1783,7 +1838,7 @@ class Tracker(QWidget):
             )
 
             df_tanks["Opened date"] = pd.to_datetime(df_tanks["Opened date"])
-            df_tanks["Opened date"] = df_tanks["Opened date"].dt.strftime("%Y/%m/%d")
+            df_tanks["Opened date"] = pd.to_datetime(df_tanks["Opened date"])
             self.data["tanks"] = df_tanks
 
             for row in self.data["resins"].to_dict(orient="records"):
@@ -1805,10 +1860,53 @@ class Tracker(QWidget):
 
             df4 = df4.dropna(axis="columns")
             df4.columns.values[0] = "Procedure"
-            df4["Form 2"] = df4["Form 2"].dt.strftime("%Y/%m/%d")
-            df4["Form 3"] = df4["Form 3"].dt.strftime("%Y/%m/%d")
+            df4["Form 2"] = pd.to_datetime(df4["Form 2"])
+            df4["Form 3"] = pd.to_datetime(df4["Form 3"])
 
             self.data["maintenance"] = df4
+
+            for i in self.data["prints"].index:
+                printer = None
+                resin = None
+                tank = None
+                for _ in self.printers:
+                    if _.name == self.data["prints"].loc[i, "Printer"]:
+                        printer = _
+
+                for _ in self.consummables:
+                    if (
+                        _.type == "Resin Cartridge"
+                        and _.resin_type
+                        == self.data["prints"].loc[i, "Resin Cartridge"]
+                        and _.id == self.data["prints"].loc[i, "CartridgeID"]
+                    ):
+                        resin = _
+
+                for _ in self.consummables:
+                    if (
+                        _.type == "Tank"
+                        and _.resin_fill
+                        == self.data["prints"].loc[i, "Resin Cartridge"]
+                        and _.id == self.data["prints"].loc[i, "TankID"]
+                        and _.resin_tank.startswith(
+                            self.data["prints"].loc[i, "Printer"]
+                        )
+                    ):
+                        tank = _
+
+                self.prints.append(
+                    Prints(
+                        printer,
+                        resin,
+                        tank,
+                        self.data["prints"].loc[i, "Date"],
+                        float(self.data["prints"].loc[i, "Volume used (mL)"]),
+                        self.data["prints"].loc[i, "Tank fill (~260mL)"],
+                        self.data["prints"].loc[i, "Fail"],
+                        self.data["prints"].loc[i, "Comment"],
+                    )
+                )
+
             logger.info("No data found, uploading data from excel sheet")
 
     def render_printer_section(self) -> QTabWidget:
@@ -1990,6 +2088,7 @@ class Tracker(QWidget):
                         self.preliminary_vbox.itemAtPosition(1, 1).widget()
                     )
                 self.preliminary_vbox.addWidget(QLabel(printer.replace("_", " ")), 1, 1)
+                # print("here")
                 button.setStyleSheet(
                     """QCheckBox::indicator {
                                 image: url(assets/Printers/"""
@@ -2086,10 +2185,6 @@ if __name__ == "__main__":
     logger.info("New instanciation!")
     window = QApplication([])
     loop = QEventLoop()
-
-    settings = QSettings("app", "app")
-    settings.clear()
-
     asyncio.set_event_loop(loop)
 
     view = Tracker()

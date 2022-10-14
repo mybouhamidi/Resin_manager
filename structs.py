@@ -6,15 +6,18 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QVBoxLayout,
     QGridLayout,
+    QErrorMessage,
     QComboBox,
 )
-from datetime import datetime
+from datetime import datetime, timedelta
 from PyQt5.QtGui import QIcon, QRegExpValidator
 from PyQt5.QtCore import QRegExp
 
+import numpy as np
+
 regex = QRegExp(
-            "^([0-9][0-9]|19[0-9][0-9]|20[0-9][0-9])(\/|/)([1-9]|0[1-9]|1[0-2])(\:|/)([1-9]|0[1-9]|1[0-9]|2[0-9]|3[0-1])$"
-        )
+    "^([0-9][0-9]|19[0-9][0-9]|20[0-9][0-9])(\/|/)([1-9]|0[1-9]|1[0-2])(\:|/)([1-9]|0[1-9]|1[0-9]|2[0-9]|3[0-1])$"
+)
 validator = QRegExpValidator(regex)
 
 regex_1 = QRegExp("[0-9]+")
@@ -26,6 +29,7 @@ validator_2 = QRegExpValidator(regex_2)
 regex_3 = QRegExp("[0-9999]+")
 validator_3 = QRegExpValidator(regex_3)
 
+
 class Printer_addition(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -33,7 +37,7 @@ class Printer_addition(QMainWindow):
     def input(self):
         self.setWindowTitle("Addition of new printer")
         main_layout = QWidget()
-    
+
         vbox = QVBoxLayout()
         self.printer_name = QLabel("Printer's name:")
         self.printer_field = QLineEdit()
@@ -173,11 +177,82 @@ class Consummables_addition(QMainWindow):
         printers_add.setIcon(QIcon("assets/plus-solid.svg"))
         printers_add.setToolTip("Append resin to configuration")
         grid_resins.addWidget(printers_add)
+        printers_add.clicked.connect(self.append_resin)
         main_layout.setLayout(grid_resins)
 
         self.setCentralWidget(main_layout)
         self.setFixedSize(600, 350)
         self.move(600, 350)
+
+    def append_resin(self):
+        valid = True
+        if self.cartridge_id_resins_combo_box.currentText() == "":
+            self.cartridge_id_resins_combo_box.setStyleSheet("border: 1px solid red")
+            valid = False
+        if self.resin_type_resins_combo_box.currentText() == "":
+            self.resin_type_resins_combo_box.setStyleSheet("border: 1px solid red")
+            valid = False
+        if self.version_resins_combo_box.currentText() == "":
+            self.version_resins_combo_box.setStyleSheet("border: 1px solid red")
+            valid = False
+        if self.batch_date_resins_field.text() == "":
+            self.batch_date_resins_field.setStyleSheet("border: 1px solid red")
+            valid = False
+
+        if self.comments_resins_field.text() == "":
+            comments = "nan"
+        else:
+            comments = self.comments_resins_field.text()
+
+        if valid:
+            try:
+                self.parent.data["resins"]["CartridgeID.1"] = self.parent.data[
+                    "resins"
+                ]["CartridgeID.1"].astype(float)
+                i = self.parent.data["resins"].loc[
+                    (
+                        self.parent.data["resins"]["CartridgeID.1"]
+                        == float(self.cartridge_id_resins_combo_box.currentText())
+                    )
+                    & (
+                        self.parent.data["resins"]["Resin Cartridge.1"]
+                        == self.resin_type_resins_combo_box.currentText()
+                    )
+                ]
+
+                if isinstance(i.index[0], np.int64):
+                    self.cartridge_id_resins_combo_box.setStyleSheet(
+                        "border: 1px solid red"
+                    )
+                    self.resin_type_resins_combo_box.setStyleSheet(
+                        "border: 1px solid red"
+                    )
+                    valid = False
+                    id = self.parent.data["cartridges"]["Next Cartridge ID"].loc[
+                        self.parent.data["cartridges"]["Cartridge"]
+                        == self.resin_type_resins_combo_box.currentText()
+                    ]
+
+                    error = QErrorMessage(self)
+                    error.showMessage(
+                        f"Cartridge already in use, please choose the next ID available {id[id.index[0]]}"
+                    )
+            except:
+                if valid:
+                    self.parent.cartridge_id_combo_box.setCurrentText(
+                        self.cartridge_id_resins_combo_box.currentText()
+                    )
+                    self.parent.resin_combo_box.setCurrentText(
+                        self.resin_type_resins_combo_box.currentText()
+                    )
+                    self.parent.version_combo_box.setCurrentText(
+                        self.version_resins_combo_box.currentText()
+                    )
+                    self.parent.batch_date_resins_field.setText(
+                        self.batch_date_resins_field.text()
+                    )
+
+                    self.parent.append_to_resins_df(comments)
 
 
 class Tank_addition(QMainWindow):
@@ -335,6 +410,7 @@ class Printer:
         self.company = company
 
     def can_consume(self, consummable: Consummables) -> bool:
+        # print("here 1")
         if consummable.company == self.company:
             return True
         else:
@@ -359,6 +435,7 @@ class Prints:
         self.resin_version = cartridge.version
         self.cartridge_id = cartridge.id
 
+        # print(date)
         self.resin_tank = tank.resin_tank
         self.tank_id = tank.id
         self.volume = volume
@@ -367,6 +444,8 @@ class Prints:
         self.comments = comments
 
     def can_consume(self, resin: Consummables, tank: Consummables):
+        # print("here 2")
+        # print(resin.resin_type, tank.resin_fill)
         if resin.resin_type != tank.resin_fill:
             return False
 
