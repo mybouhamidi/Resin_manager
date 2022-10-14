@@ -239,20 +239,18 @@ class Consummables_addition(QMainWindow):
                     )
             except:
                 if valid:
-                    self.parent.cartridge_id_combo_box.setCurrentText(
+                    data = {}
+                    data["CartridgeID.1"] = float(
                         self.cartridge_id_resins_combo_box.currentText()
                     )
-                    self.parent.resin_combo_box.setCurrentText(
-                        self.resin_type_resins_combo_box.currentText()
-                    )
-                    self.parent.version_combo_box.setCurrentText(
-                        self.version_resins_combo_box.currentText()
-                    )
-                    self.parent.batch_date_resins_field.setText(
-                        self.batch_date_resins_field.text()
-                    )
-
-                    self.parent.append_to_resins_df(comments)
+                    data[
+                        "Resin Cartridge.1"
+                    ] = self.resin_type_resins_combo_box.currentText()
+                    data["Version"] = self.version_resins_combo_box.currentText()
+                    data["Batch Date"] = self.batch_date_resins_field.text()
+                    data["Company"] = self.resins_company_combo_box.currentText()
+                    self.parent.append_to_resins_df(data, comments)
+                    self.close()
 
 
 class Tank_addition(QMainWindow):
@@ -366,12 +364,97 @@ class Tank_addition(QMainWindow):
         printers_add = QPushButton()
         printers_add.setIcon(QIcon("assets/plus-solid.svg"))
         printers_add.setToolTip("Append tank to configuration")
+        printers_add.clicked.connect(self.add_tank)
         grid_tanks.addWidget(printers_add, 10, 0)
         main_layout.setLayout(grid_tanks)
 
         self.setCentralWidget(main_layout)
         self.setFixedSize(600, 350)
         self.move(600, 350)
+
+    def add_tank(self):
+        valid = True
+        if self.tanks_id_combo_box.currentText() == "":
+            self.tanks_id_combo_box.setStyleSheet("border: 1px solid red")
+            valid = False
+        if self.tanks_resin_combo_box.currentText() == "":
+            self.tanks_resin_combo_box.setStyleSheet("border: 1px solid red")
+            valid = False
+        if self.tanks_resin_fill_combo_box.currentText() == "":
+            self.version_resins_combo_box.setStyleSheet("border: 1px solid red")
+            valid = False
+        if self.version_tanks_combo_box.currentText() == "":
+            self.version_tanks_combo_box.setStyleSheet("border: 1px solid red")
+            valid = False
+        if self.tanks_total_volume_field.text() == "":
+            self.tanks_total_volume_field.setStyleSheet("border: 1px solid red")
+            valid = False
+        if self.tanks_status_combo_box.currentText() == "":
+            self.tanks_status_combo_box.setStyleSheet("border: 1px solid red")
+            valid = False
+
+        if self.tanks_company_combo_box.currentText() == "":
+            self.tanks_company_combo_box.setStyleSheet("border: 1px solid red")
+            valid = False
+
+        if self.tanks_opened_date_field.text() == "":
+            self.tanks_opened_date_field.setStyleSheet("border: 1px solid red")
+            valid = False
+
+        if self.tanks_comments_field.text() == "":
+            comments = "nan"
+        else:
+            comments = self.comments_resins_field.text()
+
+        try:
+            self.parent.data["tanks"]["TankID.1"] = self.parent.data["tanks"][
+                "TankID.1"
+            ].astype(float)
+            i = self.parent.data["tanks"].loc[
+                (
+                    self.parent.data["tanks"]["TankID.1"]
+                    == float(self.tanks_id_combo_box.currentText())
+                )
+                & (
+                    self.parent.data["tanks"]["Resin Fill"]
+                    == self.tanks_resin_fill_combo_box.currentText()
+                )
+            ]
+
+            if i.shape[0] == 0:
+                raise IndexError
+
+            if isinstance(i.index[0], np.int64):
+                self.tanks_id_combo_box.setStyleSheet("border: 1px solid red")
+                self.tanks_resin_fill_combo_box.setStyleSheet("border: 1px solid red")
+                valid = False
+                id = self.parent.data["cartridges"]["Next Tank ID"].loc[
+                    self.parent.data["cartridges"]["Cartridge"]
+                    == self.tanks_resin_fill_combo_box.currentText()
+                ]
+
+                error = QErrorMessage(self)
+                error.showMessage(
+                    f"Tank already in use, please choose the next ID available {id[id.index[0]]}"
+                )
+                # logger.info("User is selecting an already taken Tank ID")
+        except IndexError:
+            if valid:
+                data = {}
+                data["TankID.1"] = float(self.tanks_id_combo_box.currentText())
+                data["Resin"] = self.tanks_resin_combo_box.currentText()
+                data["Resin Fill"] = self.tanks_resin_fill_combo_box.currentText()
+                data["Version"] = self.version_tanks_combo_box.currentText()
+                data["Total Volume"] = float(self.tanks_total_volume_field.text())
+                data["Status"] = self.tanks_status_combo_box.currentText()
+                data["Opened Date"] = self.tanks_opened_date_field.text()
+                data["Company"] = self.tanks_company_combo_box.currentText()
+
+                self.tanks_id_combo_box.setStyleSheet("border: 1px solid black")
+                self.tanks_resin_fill_combo_box.setStyleSheet("border: 1px solid black")
+                self.parent.append_to_tanks_df(data, comments)
+                # logger.info("New tank entered, updating Tanks/Labelling tables")
+                self.close()
 
 
 class Consummables:

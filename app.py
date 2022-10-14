@@ -355,7 +355,7 @@ class Tracker(QWidget):
         tanks_add = QPushButton()
         tanks_add.setIcon(QIcon("assets/plus-solid.svg"))
         tanks_add.setToolTip("Append tank to table")
-        tanks_add.clicked.connect(self.validate_tanks)
+        # tanks_add.clicked.connect(self.validate_tanks)
 
         tanks_del = QPushButton()
         tanks_del.setIcon(QIcon("assets/circle-minus-solid.svg"))
@@ -1374,15 +1374,15 @@ class Tracker(QWidget):
                 self.append_to_resins_df(comments)
                 logger.info("New cartridge entered, updating Resins/Labelling tables")
 
-    def append_to_resins_df(self, comments):
+    def append_to_resins_df(self, data, comments):
         df = pd.DataFrame(
             {
-                "CartridgeID.1": [float(self.cartridge_id_combo_box.currentText())],
-                "Resin Cartridge.1": [self.resin_combo_box.currentText()],
-                "Version.1": [self.version_combo_box.currentText()],
+                "CartridgeID.1": [data["CartridgeID.1"]],
+                "Resin Cartridge.1": [data["Resin Cartridge.1"]],
+                "Version.1": [data["Version"]],
                 "Total print volume (mL)": [0.0],
                 "Status": ["Cartridge OK"],
-                "Batch date": [self.batch_date_field.text()],
+                "Batch date": [data["Batch Date"]],
                 "Comments": [comments],
             }
         )
@@ -1403,9 +1403,7 @@ class Tracker(QWidget):
                     Qt.AlignHCenter | Qt.Alignment(Qt.TextWordWrap)
                 )
 
-        cartridge = Consummables(
-            "Resin Cartridge", self.resins_company_combo_box.currentText()
-        )
+        cartridge = Consummables("Resin Cartridge", data["Company"])
         cartridge.requierment_per_type(df.to_dict(orient="records"))
         self.consummables.append(cartridge)
 
@@ -1486,96 +1484,121 @@ class Tracker(QWidget):
         self.resin_combo_box.clear()
         self.resin_combo_box.addItems(set(self.data["resins"]["Resin Cartridge.1"]))
 
-        self.cartridge_id_resins_combo_box.setStyleSheet("border: 0.5px solid black")
-        self.resin_type_resins_combo_box.setStyleSheet("border: 0.5px solid black")
+        # self.cartridge_id_resins_combo_box.setStyleSheet("border: 0.5px solid black")
+        # self.resin_type_resins_combo_box.setStyleSheet("border: 0.5px solid black")
 
-    def validate_tanks(self):
-        valid = True
-        if self.tanks_id_combo_box.currentText() == "":
-            self.tanks_id_combo_box.setStyleSheet("border: 1px solid red")
-            valid = False
-        if self.tanks_resin_combo_box.currentText() == "":
-            self.tanks_resin_combo_box.setStyleSheet("border: 1px solid red")
-            valid = False
-        if self.tanks_resin_fill_combo_box.currentText() == "":
-            self.version_resins_combo_box.setStyleSheet("border: 1px solid red")
-            valid = False
-        if self.version_tanks_combo_box.currentText() == "":
-            self.version_tanks_combo_box.setStyleSheet("border: 1px solid red")
-            valid = False
-        if self.tanks_total_volume_field.text() == "":
-            self.tanks_total_volume_field.setStyleSheet("border: 1px solid red")
-            valid = False
-        if self.tanks_status_combo_box.currentText() == "":
-            self.tanks_status_combo_box.setStyleSheet("border: 1px solid red")
-            valid = False
+    # def validate_tanks(self):
+    #     valid = True
+    #     if self.tanks_id_combo_box.currentText() == "":
+    #         self.tanks_id_combo_box.setStyleSheet("border: 1px solid red")
+    #         valid = False
+    #     if self.tanks_resin_combo_box.currentText() == "":
+    #         self.tanks_resin_combo_box.setStyleSheet("border: 1px solid red")
+    #         valid = False
+    #     if self.tanks_resin_fill_combo_box.currentText() == "":
+    #         self.version_resins_combo_box.setStyleSheet("border: 1px solid red")
+    #         valid = False
+    #     if self.version_tanks_combo_box.currentText() == "":
+    #         self.version_tanks_combo_box.setStyleSheet("border: 1px solid red")
+    #         valid = False
+    #     if self.tanks_total_volume_field.text() == "":
+    #         self.tanks_total_volume_field.setStyleSheet("border: 1px solid red")
+    #         valid = False
+    #     if self.tanks_status_combo_box.currentText() == "":
+    #         self.tanks_status_combo_box.setStyleSheet("border: 1px solid red")
+    #         valid = False
 
-        if self.tanks_company_combo_box.currentText() == "":
-            self.tanks_company_combo_box.setStyleSheet("border: 1px solid red")
-            valid = False
+    #     if self.tanks_company_combo_box.currentText() == "":
+    #         self.tanks_company_combo_box.setStyleSheet("border: 1px solid red")
+    #         valid = False
 
-        if self.tanks_opened_date_field.text() == "":
-            self.tanks_opened_date_field.setStyleSheet("border: 1px solid red")
-            valid = False
+    #     if self.tanks_opened_date_field.text() == "":
+    #         self.tanks_opened_date_field.setStyleSheet("border: 1px solid red")
+    #         valid = False
 
-        if self.tanks_comments_field.text() == "":
-            comments = "nan"
-        else:
-            comments = self.comments_resins_field.text()
+    #     if self.tanks_comments_field.text() == "":
+    #         comments = "nan"
+    #     else:
+    #         comments = self.comments_resins_field.text()
 
-        try:
-            self.data["tanks"]["TankID.1"] = self.data["tanks"]["TankID.1"].astype(
-                float
-            )
-            i = self.data["tanks"].loc[
-                (
-                    self.data["tanks"]["TankID.1"]
-                    == float(self.tanks_id_combo_box.currentText())
-                )
-                & (
-                    self.data["tanks"]["Resin Fill"]
-                    == self.tanks_resin_fill_combo_box.currentText()
-                )
-            ]
+    #     try:
+    #         self.data["tanks"]["TankID.1"] = self.data["tanks"]["TankID.1"].astype(
+    #             float
+    #         )
+    #         i = self.data["tanks"].loc[
+    #             (
+    #                 self.data["tanks"]["TankID.1"]
+    #                 == float(self.tanks_id_combo_box.currentText())
+    #             )
+    #             & (
+    #                 self.data["tanks"]["Resin Fill"]
+    #                 == self.tanks_resin_fill_combo_box.currentText()
+    #             )
+    #         ]
 
-            if i.shape[0] == 0:
-                raise IndexError
+    #         if i.shape[0] == 0:
+    #             raise IndexError
 
-            if isinstance(i.index[0], np.int64):
-                self.tanks_id_combo_box.setStyleSheet("border: 1px solid red")
-                self.tanks_resin_fill_combo_box.setStyleSheet("border: 1px solid red")
-                valid = False
-                id = self.data["cartridges"]["Next Tank ID"].loc[
-                    self.data["cartridges"]["Cartridge"]
-                    == self.tanks_resin_fill_combo_box.currentText()
-                ]
+    #         if isinstance(i.index[0], np.int64):
+    #             self.tanks_id_combo_box.setStyleSheet("border: 1px solid red")
+    #             self.tanks_resin_fill_combo_box.setStyleSheet("border: 1px solid red")
+    #             valid = False
+    #             id = self.data["cartridges"]["Next Tank ID"].loc[
+    #                 self.data["cartridges"]["Cartridge"]
+    #                 == self.tanks_resin_fill_combo_box.currentText()
+    #             ]
 
-                error = QErrorMessage(self)
-                error.showMessage(
-                    f"Tank already in use, please choose the next ID available {id[id.index[0]]}"
-                )
-                logger.info("User is selecting an already taken Tank ID")
-        except IndexError:
-            if valid:
-                self.tanks_id_combo_box.setStyleSheet("border: 1px solid black")
-                self.tanks_resin_fill_combo_box.setStyleSheet("border: 1px solid black")
-                self.append_to_tanks_df(comments)
-                logger.info("New tank entered, updating Tanks/Labelling tables")
+    #             error = QErrorMessage(self)
+    #             error.showMessage(
+    #                 f"Tank already in use, please choose the next ID available {id[id.index[0]]}"
+    #             )
+    #             logger.info("User is selecting an already taken Tank ID")
+    #     except IndexError:
+    #         if valid:
+    #             self.tanks_id_combo_box.setStyleSheet("border: 1px solid black")
+    #             self.tanks_resin_fill_combo_box.setStyleSheet("border: 1px solid black")
+    #             self.append_to_tanks_df(comments)
+    #             logger.info("New tank entered, updating Tanks/Labelling tables")
 
     def prints_edited(self, i, j):
-        self.data["prints"].iloc[i, j] = self.prints_table.item(i, j).text()
+        # if self.prints_table.item(i, j).text() == "":
+        try:
+            self.data["prints"].iloc[i, j] = self.prints_table.item(i, j).text()
+        except:
+            self.data["prints"].loc[i, j] = self.prints_table.item(i, j).text()
+        if self.prints_table.rowCount() - 1 == i:
+            self.prints_table.setRowCount(self.prints_table.rowCount() + 1)
+            self.prints_table.scrollToBottom()
         logger.info("saving changes in the prints table")
 
     def resins_edited(self, i, j):
-        self.data["resins"].iloc[i, j] = self.resins_table.item(i, j).text()
+        try:
+            self.data["resins"].iloc[i, j] = self.resins_table.item(i, j).text()
+        except:
+            self.data["resins"].loc[i, j] = self.resins_table.item(i, j).text()
+        if self.resins_table.rowCount() - 1 == i:
+            self.resins_table.setRowCount(self.resins_table.rowCount() + 1)
+            self.resins_table.scrollToBottom()
         logger.info("saving changes in the resins table")
 
     def cartridges_edited(self, i, j):
-        self.data["cartridges"].iloc[i, j] = self.cartridge_table.item(i, j).text()
+        try:
+            self.data["cartridges"].iloc[i, j] = self.cartridge_table.item(i, j).text()
+        except:
+            self.data["cartridges"].loc[i, j] = self.resins_table.item(i, j).text()
+        if self.cartridge_table.rowCount() - 1 == i:
+            self.cartridge_table.setRowCount(self.cartridge_table.rowCount() + 1)
+            self.cartridge_table.scrollToBottom()
         logger.info("saving changes in the tables table")
 
     def tanks_edited(self, i, j):
-        self.data["tanks"].iloc[i, j] = self.tanks.item(i, j).text()
+        try:
+            self.data["tanks"].iloc[i, j] = self.tanks.item(i, j).text()
+        except:
+            self.data["tanks"].loc[i, j] = self.tanks.item(i, j).text()
+        if self.tanks.rowCount() - 1 == i:
+            self.tanks.setRowCount(self.tanks.rowCount() + 1)
+            self.tanks.scrollToBottom()
         logger.info("saving changes in the tanks table")
 
     def maintenance_edited(self, i, j):
@@ -1588,18 +1611,16 @@ class Tracker(QWidget):
         )
         logger.info("saving changes in the maintenance table")
 
-    def append_to_tanks_df(self, comments):
+    def append_to_tanks_df(self, data, comments):
         df = pd.DataFrame(
             {
-                "TankID.1": [float(self.tanks_id_combo_box.currentText())],
-                "Resin Tank.1": [self.tanks_resin_combo_box.currentText()],
-                "Resin Fill": [self.tanks_resin_fill_combo_box.currentText()],
-                "Version.2": [self.version_tanks_combo_box.currentText()],
-                "Total print volume (mL).1": [
-                    float(self.tanks_total_volume_field.text())
-                ],
-                "Status.1": ["Tank OK"],
-                "Opened date": [self.tanks_opened_date_field.text()],
+                "TankID.1": [data["TankID.1"]],
+                "Resin Tank.1": [data["Resin"]],
+                "Resin Fill": [data["Resin Fill"]],
+                "Version.2": [data["Version"]],
+                "Total print volume (mL).1": [data["Total Volume"]],
+                "Status.1": [data["Status"]],
+                "Opened date": [data["Opened Date"]],
                 "Comments.1": [comments],
             }
         )
@@ -1607,24 +1628,19 @@ class Tracker(QWidget):
             [self.data["tanks"], df], axis=0, ignore_index=True
         )
 
-        tank = Consummables("Tank", self.tanks_company_combo_box.currentText())
+        tank = Consummables("Tank", data["Company"])
         tank.requierment_per_type(df.to_dict(orient="records"))
         self.consummables.append(tank)
 
         if (
             self.data["cartridges"]["Next Tank ID"]
-            .loc[
-                (
-                    self.data["cartridges"]["Cartridge"]
-                    == self.tanks_resin_fill_combo_box.currentText()
-                )
-            ]
+            .loc[(self.data["cartridges"]["Cartridge"] == data["Resin Fill"])]
             .size
             == 0
         ):
             df = pd.DataFrame(
                 {
-                    "Cartridge": [self.tanks_resin_fill_combo_box.currentText()],
+                    "Cartridge": [data["Resin Fill"]],
                     "Active Count": [1],
                     "Unused count": [0],
                     "Next Cartridge ID": [1.0],
@@ -1637,21 +1653,15 @@ class Tracker(QWidget):
 
         else:
             self.data["cartridges"]["Next Tank ID"].loc[
-                (
-                    self.data["cartridges"]["Cartridge"]
-                    == self.tanks_resin_fill_combo_box.currentText()
-                )
+                (self.data["cartridges"]["Cartridge"] == data["Resin Fill"])
             ] = (
                 list(
                     self.data["tanks"]["TankID.1"]
                     .loc[
-                        (
-                            self.data["tanks"]["Resin Fill"]
-                            == self.tanks_resin_fill_combo_box.currentText()
-                        )
+                        (self.data["tanks"]["Resin Fill"] == data["Resin Fill"])
                         & (
                             self.data["tanks"]["Total print volume (mL).1"]
-                            == float(self.tanks_total_volume_field.text())
+                            == data["Total Volume"]
                         )
                     ]
                     .sort_values()
@@ -1687,10 +1697,10 @@ class Tracker(QWidget):
 
         self.tanks.scrollToBottom()
 
-        self.tanks_id_combo_box.setStyleSheet("border: 0.5px solid black")
-        self.tanks_resin_fill_combo_box.setStyleSheet("border: 0.5px solid black")
+        # self.tanks_id_combo_box.setStyleSheet("border: 0.5px solid black")
+        # self.tanks_resin_fill_combo_box.setStyleSheet("border: 0.5px solid black")
 
-        self.tanks_id_combo_box.clear()
+        # self.tanks_id_combo_box.clear()
         self.tank_id_combo_box.addItems(
             list(map(lambda x: str(x), set(self.data["tanks"]["TankID.1"])))
         )
